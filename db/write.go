@@ -67,14 +67,6 @@ func (m *Mysql) GetSession() *xorm.Session {
 	return m.engine.NewSession()
 }
 
-func (m *Mysql) SaveTxTask(itf xorm.Interface, tasks *types.TransactionTask) (err error) {
-	_, err = itf.Insert(tasks)
-	if err != nil {
-		logrus.Errorf("insert transaction task error:%v, tasks:%v", err, tasks)
-	}
-	return
-}
-
 func (m *Mysql) SaveMonitorTask(itf xorm.Interface, monitor *types.Monitor) (err error) {
 	_, err = itf.Insert(monitor)
 	if err != nil {
@@ -86,28 +78,6 @@ func (m *Mysql) SaveMonitorTask(itf xorm.Interface, monitor *types.Monitor) (err
 func (m *Mysql) RemoveMonitorTask(addr string) error {
 	_, err := m.engine.Exec("delete t_monitor where addr = ?", addr)
 	return err
-}
-
-func (m *Mysql) UpdateTransactionTask(itf xorm.Interface, task *types.TransactionTask) error {
-	_, err := itf.Table("t_transaction_task").Where("f_id = ?", task.ID).Update(task)
-	return err
-}
-func (m *Mysql) UpdateTransactionTaskMessage(taskID uint64, message string) error {
-	_, err := m.engine.Exec("update t_transaction_task set f_message = ? where f_id = ?", message, taskID)
-	return err
-}
-
-func (m *Mysql) UpdateTransactionTaskState(taskID uint64, state int) error {
-	_, err := m.engine.Exec("update t_transaction_task set f_state = ? where f_id = ?", state, taskID)
-	return err
-}
-
-func (m *Mysql) InsertCollectTx(itf xorm.Interface, task *types.CollectTxDB) (err error) {
-	_, err = itf.Insert(task)
-	if err != nil {
-		logrus.Errorf("insert collect task error:%v, tasks:%v", err, task)
-	}
-	return
 }
 
 func (m *Mysql) InsertMonitor(itf xorm.Interface, monitor *types.Monitor) (err error) {
@@ -123,25 +93,10 @@ func (m *Mysql) UpdateMonitor(height uint64, addr string) error {
 	return err
 }
 
-func (m *Mysql) InsertCollectSubTx(itf xorm.Interface, task *types.TransactionTask) (err error) {
+func (m *Mysql) InsertCollectTx(itf xorm.Interface, task *types.CollectTxDB) (err error) {
 	_, err = itf.Insert(task)
 	if err != nil {
-		logrus.Errorf("insert collect sub task error:%v, tasks:%v", err, task)
+		logrus.Errorf("insert collect task error:%v, tasks:%v", err, task)
 	}
 	return
-}
-
-func (m *Mysql) UpdateCollectTx(itf xorm.Interface, task *types.CollectTxDB) error {
-	_, err := itf.Table("t_src_tx").Where("id = ?", task.Id).Update(task)
-	return err
-}
-
-func (m *Mysql) UpdateCollectTxState(ID uint64, state int) error {
-	_, err := m.engine.Exec("update t_src_tx set collect_state = ? where id = ?", state, ID)
-	return err
-}
-
-func (m *Mysql) UpdateCollectSubTask(itf xorm.Interface, task *types.CollectTxDB) error {
-	_, err := itf.Table("t_src_tx").Where("id = ?", task.Id).Update(task)
-	return err
 }

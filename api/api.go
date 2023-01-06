@@ -79,7 +79,7 @@ func (s *ApiService) Add(c *gin.Context) {
 
 	err = utils.CommitWithSession(s.db, func(session *xorm.Session) (execErr error) {
 		if err := s.db.SaveMonitorTask(session, &monitor); err != nil {
-			logrus.Errorf("save monitor task error:%v tasks:[%v]", err, task)
+			logrus.Errorf("save monitor task error:%v tasks:[%v]", err, monitor)
 			return
 		}
 		return
@@ -120,4 +120,8 @@ func (s *ApiService) Remove(c *gin.Context) {
 	res.Code = 0
 	res.Message = "OK"
 	c.SecureJSON(http.StatusOK, res)
+}
+
+func (c *ApiService) Name() string {
+	return "API"
 }

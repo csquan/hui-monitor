@@ -35,31 +35,10 @@ func NewServiceScheduler(conf *config.Config, db types.IDB, block_db types.IDB, 
 }
 
 func (t *ServiceScheduler) Start() {
-	//create monitor service
 	monitorService := NewMonitorService(t.db, t.block_db, t.conf)
-
-	//create collect service
-	collectService := NewCollectService(t.db, t.conf)
-
-	//create assembly service
-	assemblyService := NewAssemblyService(t.db, t.conf)
-	//create sign service
-	signService := NewSignService(t.db, t.conf)
-	//create boradcast service
-	boradcastService := NewBoradcastService(t.db, t.conf)
-	//create update service
-	CheckService := NewCheckService(t.db, t.conf)
-	//create update service
-	UpdateAccountService := NewUpdateAccountService(t.db, t.conf)
 
 	t.services = []types.IAsyncService{
 		monitorService,
-		collectService,
-		assemblyService,
-		signService,
-		boradcastService,
-		CheckService,
-		UpdateAccountService,
 	}
 
 	timer := time.NewTimer(t.conf.QueryInterval)

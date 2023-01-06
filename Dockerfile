@@ -2,7 +2,7 @@ FROM alpine:latest
 
 WORKDIR /work
 
-ADD ./HuiCollect /work/main
+ADD ./huimonitor /work/main
 
 CMD ["./main"]
 

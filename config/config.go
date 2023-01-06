@@ -14,7 +14,7 @@ import (
 var Env string
 
 const (
-	appID string = "HuiCollect"
+	appID string = "huimonitor"
 )
 
 type Conf struct {

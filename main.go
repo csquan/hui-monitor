@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/ethereum/HuiCollect/api"
 	"os"
 	"os/signal"
 	"syscall"
@@ -70,6 +71,9 @@ func main() {
 	if err != nil {
 		logrus.Fatalf("connect to dbConnection error:%v", err)
 	}
+
+	apiservice := api.NewApiService(dbConnection, conf)
+	go apiservice.Run(conf.ServerConf)
 
 	//setup scheduler
 	scheduler, err := services.NewServiceScheduler(conf, dbConnection, block_dbConnection, sigCh)
