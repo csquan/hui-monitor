@@ -11,7 +11,9 @@ type IReader interface {
 	//查询指定地址的监控表中的高度
 	GetMonitorHeightInfo(Addr string) (int, error)
 	//查询监控
-	GetMonitorCollectTask(addr string, height int) ([]*TxErc20, error)
+	GetMonitorCollectTask(addr string, height uint64) ([]*TxErc20, error)
+
+	GetMonitorInfo() ([]*Monitor, error)
 }
 
 type IWriter interface {

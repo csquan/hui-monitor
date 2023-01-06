@@ -21,7 +21,7 @@ func (m *Mysql) GetMonitorCountInfo(Addr string) (int, error) {
 
 func (m *Mysql) GetMonitorHeightInfo(Addr string) (int, error) {
 	height := 0
-	sql := fmt.Sprintf("select height from t_monitor where addr = \"%s\";", Addr)
+	sql := fmt.Sprintf("select * from t_monitor where addr = \"%s\";", Addr)
 	ok, err := m.engine.SQL(sql).Limit(1).Get(&height)
 	if err != nil {
 		return height, err
@@ -33,7 +33,16 @@ func (m *Mysql) GetMonitorHeightInfo(Addr string) (int, error) {
 	return height, err
 }
 
-func (m *Mysql) GetMonitorCollectTask(addr string, height int) ([]*types.TxErc20, error) {
+func (m *Mysql) GetMonitorInfo() ([]*types.Monitor, error) {
+	monitors := make([]*types.Monitor, 0)
+	err := m.engine.Table("t_monitor").Find(&monitors)
+	if err != nil {
+		return nil, err
+	}
+	return monitors, err
+}
+
+func (m *Mysql) GetMonitorCollectTask(addr string, height uint64) ([]*types.TxErc20, error) {
 	tasks := make([]*types.TxErc20, 0)
 	err := m.engine.Table("tx_erc20").Where("receiver = ? and block_num > ?", addr, height).OrderBy("block_num").Find(&tasks)
 	if err != nil {
