@@ -7,7 +7,7 @@ import (
 
 func (m *Mysql) GetMonitorCountInfo(Addr string) (int, error) {
 	count := 0
-	sql := fmt.Sprintf("select count(*) from t_monitor where addr = \"%s\";", Addr)
+	sql := fmt.Sprintf("select count(*) from t_monitor where f_addr = \"%s\";", Addr)
 	ok, err := m.engine.SQL(sql).Limit(1).Get(&count)
 	if err != nil {
 		return count, err
@@ -21,7 +21,7 @@ func (m *Mysql) GetMonitorCountInfo(Addr string) (int, error) {
 
 func (m *Mysql) GetMonitorHeightInfo(Addr string) (int, error) {
 	height := 0
-	sql := fmt.Sprintf("select * from t_monitor where addr = \"%s\";", Addr)
+	sql := fmt.Sprintf("select * from t_monitor where f_addr = \"%s\";", Addr)
 	ok, err := m.engine.SQL(sql).Limit(1).Get(&height)
 	if err != nil {
 		return height, err

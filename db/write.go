@@ -76,7 +76,7 @@ func (m *Mysql) SaveMonitorTask(itf xorm.Interface, monitor *types.Monitor) (err
 }
 
 func (m *Mysql) RemoveMonitorTask(addr string) error {
-	_, err := m.engine.Exec("delete t_monitor where addr = ?", addr)
+	_, err := m.engine.Exec("delete t_monitor where f_addr = ?", addr)
 	return err
 }
 
@@ -89,7 +89,7 @@ func (m *Mysql) InsertMonitor(itf xorm.Interface, monitor *types.Monitor) (err e
 }
 
 func (m *Mysql) UpdateMonitor(height uint64, addr string) error {
-	_, err := m.engine.Exec("update t_monitor set height = ? where addr = ?", height, addr)
+	_, err := m.engine.Exec("update t_monitor set f_height = ? where f_addr = ?", height, addr)
 	return err
 }
 
