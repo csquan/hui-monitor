@@ -43,7 +43,6 @@ type TransactionTask struct {
 
 type CollectTxDB struct {
 	*Base          `xorm:"extends"`
-	Id             uint64 `xorm:"f_id"`
 	Hash           string `xorm:"f_tx_hash"`
 	Addr           string `xorm:"f_addr"`
 	Sender         string `xorm:"f_sender"`
@@ -73,7 +72,6 @@ type TxErc20 struct {
 }
 
 func (c *CollectTxDB) Copy(tx *TxErc20) {
-	c.Id = tx.Id
 	c.Hash = tx.Hash
 	c.Addr = tx.Addr
 	c.Sender = tx.Sender
