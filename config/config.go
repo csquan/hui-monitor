@@ -35,17 +35,8 @@ type MonitorConf struct {
 	DB string `mapstructure:"db"`
 }
 
-type CollectConf struct {
-	Addr string `mapstructure:"addr"`
-}
-
-type GasConf struct {
-	Addr string `mapstructure:"addr"`
-}
-
 type ServerConf struct {
-	Port  int               `mapstructure:"port"`
-	Users map[string]string `mapstructure:"users"`
+	Port int `mapstructure:"port"`
 }
 type Config struct {
 	AppName          string `mapstructure:"app_name"`
@@ -54,9 +45,7 @@ type Config struct {
 	QueryIntervalInt uint64                `mapstructure:"query_interval"`
 	DataBase         DataBaseConf          `mapstructure:"database"`
 	UserInfo         UserInfoConf          `mapstructure:"userInfo"`
-	Collect          CollectConf           `mapstructure:"collect"`
 	Monitor          MonitorConf           `mapstructure:"monitor"`
-	Gas              GasConf               `mapstructure:"gas"`
 	LogConf          Log                   `mapstructure:"log"`
 	Chains           map[string]*ChainInfo `mapstructure:"chains"`
 	Env              string                `mapstructure:"env"`

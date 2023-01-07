@@ -8,7 +8,6 @@ var (
 		},
 	}
 	DefaultServerConf = ServerConf{
-		Port:  8080,
-		Users: map[string]string{},
+		Port: 8080,
 	}
 )
