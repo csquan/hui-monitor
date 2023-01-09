@@ -47,7 +47,7 @@ func (c *MonitorService) Run() (err error) {
 		for _, erc20_tx := range erc20_txs {
 			collectTask := types.CollectTxDB{}
 			collectTask.Copy(erc20_tx)
-			collectTask.Chain = "HUI"
+			collectTask.Chain = c.config.Chain.Name
 
 			collectTask.CollectState = int(types.TxReadyCollectState)
 

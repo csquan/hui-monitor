@@ -1,17 +1,14 @@
 database:
-  db : "root:csquan253905@tcp(127.0.0.1:3306)/HuiCollect?charset=utf8mb4"
+  db : "root:csquan253905@tcp(127.0.0.1:3306)/EthCollect?charset=utf8mb4"
 
 monitor:
-  db : "root:csquan253905@tcp(127.0.0.1:3306)/block_data_test?charset=utf8mb4"
+  db : "root:csquan253905@tcp(127.0.0.1:3306)/block_eth_test?charset=utf8mb4"
 
 server_conf:
   port: 8010
 
-chains:
-  Hui:
-    id: 8888
-    rpc_url: "http://43.198.66.226:8545"
-    fetch_timeout: 3000
+chain:
+  name: "ETH"
 
 UserInfo:
   KycPubKey: "026a38b8aa47f2af2d2163253ff5385cd059f90476990c7e3ee84bca0ead322241"

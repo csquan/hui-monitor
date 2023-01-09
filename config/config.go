@@ -6,8 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sirupsen/logrus"
-
 	"github.com/spf13/viper"
 )
 
@@ -38,35 +36,23 @@ type MonitorConf struct {
 type ServerConf struct {
 	Port int `mapstructure:"port"`
 }
+
+type ChainConf struct {
+	Name string `mapstructure:"name"`
+}
+
 type Config struct {
 	AppName          string `mapstructure:"app_name"`
 	ProfPort         int    `mapstructure:"prof_port"`
 	QueryInterval    time.Duration
-	QueryIntervalInt uint64                `mapstructure:"query_interval"`
-	DataBase         DataBaseConf          `mapstructure:"database"`
-	UserInfo         UserInfoConf          `mapstructure:"userInfo"`
-	Monitor          MonitorConf           `mapstructure:"monitor"`
-	LogConf          Log                   `mapstructure:"log"`
-	Chains           map[string]*ChainInfo `mapstructure:"chains"`
-	Env              string                `mapstructure:"env"`
-	ServerConf       ServerConf            `mapstructure:"server_conf"`
-}
-
-type ChainInfo struct {
-	ID            int    `mapstructure:"id"`
-	RpcUrl        string `mapstructure:"rpc_url"`
-	Timeout       int    `mapstructure:"timeout"`
-	BridgeAddress string `mapstructure:"bridge_address"`
-	BlockSafe     uint   `mapstructure:"block_safe"`
-}
-
-func (c *Config) MustGetChainInfo(chain string) *ChainInfo {
-	chain = strings.ToLower(chain)
-	if v, ok := c.Chains[chain]; ok {
-		return v
-	}
-	logrus.Fatalf("chain info not found chain:%s", chain)
-	return nil
+	QueryIntervalInt uint64       `mapstructure:"query_interval"`
+	DataBase         DataBaseConf `mapstructure:"database"`
+	UserInfo         UserInfoConf `mapstructure:"userInfo"`
+	Chain            ChainConf    `mapstructure:"chain"`
+	Monitor          MonitorConf  `mapstructure:"monitor"`
+	LogConf          Log          `mapstructure:"log"`
+	Env              string       `mapstructure:"env"`
+	ServerConf       ServerConf   `mapstructure:"server_conf"`
 }
 
 func (c *Config) init() {
