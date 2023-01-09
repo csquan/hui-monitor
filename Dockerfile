@@ -1,8 +1,8 @@
-FROM alpine:latest
+FROM amd64/alpine:latest
 
 WORKDIR /work
 
-ADD ./huimonitor /work/main
+ADD ./bin/linux-amd64-hui-monitor /work/main
 
 CMD ["./main"]
 
