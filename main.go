@@ -62,21 +62,42 @@ func main() {
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
 
 	//setup db connection
-	dbConnection, err := db.NewMysql(&conf.DataBase)
+	collect_dbConnection, err := db.NewCollectMysql(&conf.CollectDataBase)
 	if err != nil {
 		logrus.Fatalf("connect to dbConnection error:%v", err)
 	}
 
-	block_dbConnection, err := db.NewBlockMysql(&conf.Monitor)
+	hui_block_dbConnection, err := db.NewHuiBlockMysql(&conf.MonitorHui)
 	if err != nil {
 		logrus.Fatalf("connect to dbConnection error:%v", err)
 	}
 
-	apiservice := api.NewApiService(dbConnection, conf)
+	eth_block_dbConnection, err := db.NewEthBlockMysql(&conf.MonitorEth)
+	if err != nil {
+		logrus.Fatalf("connect to dbConnection error:%v", err)
+	}
+
+	bsc_block_dbConnection, err := db.NewBscBlockMysql(&conf.MonitorBsc)
+	if err != nil {
+		logrus.Fatalf("connect to dbConnection error:%v", err)
+	}
+
+	btc_block_dbConnection, err := db.NewBtcBlockMysql(&conf.MonitorBtc)
+	if err != nil {
+		logrus.Fatalf("connect to dbConnection error:%v", err)
+	}
+
+	tron_block_dbConnection, err := db.NewTronBlockMysql(&conf.MonitorTron)
+	if err != nil {
+		logrus.Fatalf("connect to dbConnection error:%v", err)
+	}
+
+	apiservice := api.NewApiService(collect_dbConnection, conf)
 	go apiservice.Run(conf.ServerConf)
 
 	//setup scheduler
-	scheduler, err := services.NewServiceScheduler(conf, dbConnection, block_dbConnection, sigCh)
+	scheduler, err := services.NewServiceScheduler(conf, collect_dbConnection,
+		hui_block_dbConnection, eth_block_dbConnection, bsc_block_dbConnection, btc_block_dbConnection, tron_block_dbConnection, sigCh)
 	if err != nil {
 		return
 	}

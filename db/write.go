@@ -12,11 +12,11 @@ import (
 )
 
 type Mysql struct {
-	conf   *config.DataBaseConf
+	conf   *config.CollectDataBaseConf
 	engine *xorm.Engine
 }
 
-func NewMysql(conf *config.DataBaseConf) (m *Mysql, err error) {
+func NewCollectMysql(conf *config.CollectDataBaseConf) (m *Mysql, err error) {
 	//"test:123@/test?charset=utf8"
 	engine, err := xorm.NewEngine("mysql", conf.DB)
 	if err != nil {
@@ -38,7 +38,91 @@ func NewMysql(conf *config.DataBaseConf) (m *Mysql, err error) {
 	return
 }
 
-func NewBlockMysql(conf *config.MonitorConf) (m *Mysql, err error) {
+func NewHuiBlockMysql(conf *config.MonitorHuiDataBaseConf) (m *Mysql, err error) {
+	//"test:123@/test?charset=utf8"
+	engine, err := xorm.NewEngine("mysql", conf.DB)
+	if err != nil {
+		logrus.Errorf("create engine error: %v", err)
+		return
+	}
+	engine.ShowSQL(false)
+	engine.Logger().SetLevel(core.LOG_DEBUG)
+	location, err := time.LoadLocation("UTC")
+	if err != nil {
+		return nil, err
+	}
+	engine.SetTZLocation(location)
+	engine.SetTZDatabase(location)
+	m = &Mysql{
+		engine: engine,
+	}
+	return
+}
+
+func NewEthBlockMysql(conf *config.MonitorEthDataBaseConf) (m *Mysql, err error) {
+	//"test:123@/test?charset=utf8"
+	engine, err := xorm.NewEngine("mysql", conf.DB)
+	if err != nil {
+		logrus.Errorf("create engine error: %v", err)
+		return
+	}
+	engine.ShowSQL(false)
+	engine.Logger().SetLevel(core.LOG_DEBUG)
+	location, err := time.LoadLocation("UTC")
+	if err != nil {
+		return nil, err
+	}
+	engine.SetTZLocation(location)
+	engine.SetTZDatabase(location)
+	m = &Mysql{
+		engine: engine,
+	}
+	return
+}
+
+func NewBscBlockMysql(conf *config.MonitorBscDataBaseConf) (m *Mysql, err error) {
+	//"test:123@/test?charset=utf8"
+	engine, err := xorm.NewEngine("mysql", conf.DB)
+	if err != nil {
+		logrus.Errorf("create engine error: %v", err)
+		return
+	}
+	engine.ShowSQL(false)
+	engine.Logger().SetLevel(core.LOG_DEBUG)
+	location, err := time.LoadLocation("UTC")
+	if err != nil {
+		return nil, err
+	}
+	engine.SetTZLocation(location)
+	engine.SetTZDatabase(location)
+	m = &Mysql{
+		engine: engine,
+	}
+	return
+}
+
+func NewBtcBlockMysql(conf *config.MonitorBtcDataBaseConf) (m *Mysql, err error) {
+	//"test:123@/test?charset=utf8"
+	engine, err := xorm.NewEngine("mysql", conf.DB)
+	if err != nil {
+		logrus.Errorf("create engine error: %v", err)
+		return
+	}
+	engine.ShowSQL(false)
+	engine.Logger().SetLevel(core.LOG_DEBUG)
+	location, err := time.LoadLocation("UTC")
+	if err != nil {
+		return nil, err
+	}
+	engine.SetTZLocation(location)
+	engine.SetTZDatabase(location)
+	m = &Mysql{
+		engine: engine,
+	}
+	return
+}
+
+func NewTronBlockMysql(conf *config.MonitorTronDataBaseConf) (m *Mysql, err error) {
 	//"test:123@/test?charset=utf8"
 	engine, err := xorm.NewEngine("mysql", conf.DB)
 	if err != nil {

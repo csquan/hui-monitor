@@ -1,8 +1,20 @@
-database:
+collect_database:
   db : "root:csquan253905@tcp(127.0.0.1:3306)/HuiCollect?charset=utf8mb4"
 
-monitor:
+monitor_hui_blocks_db:
   db : "root:csquan253905@tcp(127.0.0.1:3306)/block_data_test?charset=utf8mb4"
+
+monitor_eth_blocks_db:
+  db : "root:csquan253905@tcp(127.0.0.1:3306)/eth_block_data?charset=utf8mb4"
+
+monitor_bsc_blocks_db:
+  db : "root:csquan253905@tcp(127.0.0.1:3306)/bsc_block_data?charset=utf8mb4"
+
+monitor_btc_blocks_db:
+  db : "root:csquan253905@tcp(127.0.0.1:3306)/btc_block_data?charset=utf8mb4"
+
+monitor_tron_blocks_db:
+  db : "root:csquan253905@tcp(127.0.0.1:3306)/tron_block_data?charset=utf8mb4"
 
 server_conf:
   port: 8010

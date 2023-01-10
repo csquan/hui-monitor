@@ -22,7 +22,7 @@ type Conf struct {
 	Vip *viper.Viper
 }
 
-type DataBaseConf struct {
+type CollectDataBaseConf struct {
 	DB string `mapstructure:"db"` //DB 连接信息
 }
 
@@ -31,7 +31,23 @@ type UserInfoConf struct {
 	URL       string `mapstructure:"url"` //获取用户信息的URL
 }
 
-type MonitorConf struct {
+type MonitorHuiDataBaseConf struct {
+	DB string `mapstructure:"db"`
+}
+
+type MonitorEthDataBaseConf struct {
+	DB string `mapstructure:"db"`
+}
+
+type MonitorBscDataBaseConf struct {
+	DB string `mapstructure:"db"`
+}
+
+type MonitorBtcDataBaseConf struct {
+	DB string `mapstructure:"db"`
+}
+
+type MonitorTronDataBaseConf struct {
 	DB string `mapstructure:"db"`
 }
 
@@ -42,14 +58,20 @@ type Config struct {
 	AppName          string `mapstructure:"app_name"`
 	ProfPort         int    `mapstructure:"prof_port"`
 	QueryInterval    time.Duration
-	QueryIntervalInt uint64                `mapstructure:"query_interval"`
-	DataBase         DataBaseConf          `mapstructure:"database"`
-	UserInfo         UserInfoConf          `mapstructure:"userInfo"`
-	Monitor          MonitorConf           `mapstructure:"monitor"`
-	LogConf          Log                   `mapstructure:"log"`
-	Chains           map[string]*ChainInfo `mapstructure:"chains"`
-	Env              string                `mapstructure:"env"`
-	ServerConf       ServerConf            `mapstructure:"server_conf"`
+	QueryIntervalInt uint64              `mapstructure:"query_interval"`
+	CollectDataBase  CollectDataBaseConf `mapstructure:"collect_database"`
+	UserInfo         UserInfoConf        `mapstructure:"userInfo"`
+
+	MonitorHui  MonitorHuiDataBaseConf  `mapstructure:"monitor_hui_blocks_db"`
+	MonitorEth  MonitorEthDataBaseConf  `mapstructure:"monitor_eth_blocks_db"`
+	MonitorBsc  MonitorBscDataBaseConf  `mapstructure:"monitor_bsc_blocks_db"`
+	MonitorBtc  MonitorBtcDataBaseConf  `mapstructure:"monitor_btc_blocks_db"`
+	MonitorTron MonitorTronDataBaseConf `mapstructure:"monitor_tron_blocks_db"`
+
+	LogConf    Log                   `mapstructure:"log"`
+	Chains     map[string]*ChainInfo `mapstructure:"chains"`
+	Env        string                `mapstructure:"env"`
+	ServerConf ServerConf            `mapstructure:"server_conf"`
 }
 
 type ChainInfo struct {

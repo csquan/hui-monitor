@@ -60,6 +60,7 @@ func (s *ApiService) Add(c *gin.Context) {
 	}
 
 	accountAddr := gjson.Get(data, "account_address")
+	chain := gjson.Get(data, "chain")
 
 	err := checkAddr(accountAddr.String())
 
@@ -75,6 +76,7 @@ func (s *ApiService) Add(c *gin.Context) {
 	monitor := types.Monitor{
 		Addr:   accountAddr.String(),
 		Height: 0,
+		Chain:  chain.String(),
 	}
 
 	err = utils.CommitWithSession(s.db, func(session *xorm.Session) (execErr error) {
