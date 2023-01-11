@@ -146,6 +146,14 @@ type HttpRes struct {
 	Status    int    `json:"status"`
 }
 
+type RegisterData struct {
+	UID   string `json:"uid"`
+	APPID string `json:"app_id"`
+	eth   string `json:"eth"`
+	btc   string `json:"btc"`
+	trx   string `json:"trx"`
+}
+
 type Data1 struct {
 	UID string `json:"uid" `
 }
