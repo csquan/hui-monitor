@@ -21,7 +21,7 @@ type IWriter interface {
 	GetEngine() *xorm.Engine
 
 	InsertMonitor(itf xorm.Interface, monitor *Monitor) (err error)
-	UpdateMonitor(height uint64, addr string) error
+	UpdateMonitor(height uint64, chain string, addr string) error
 
 	SaveMonitorTask(itf xorm.Interface, monitor *Monitor) (err error)
 	RemoveMonitorTask(addr string) error

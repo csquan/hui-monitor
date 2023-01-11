@@ -172,8 +172,8 @@ func (m *Mysql) InsertMonitor(itf xorm.Interface, monitor *types.Monitor) (err e
 	return
 }
 
-func (m *Mysql) UpdateMonitor(height uint64, addr string) error {
-	_, err := m.engine.Exec("update t_monitor set f_height = ? where f_addr = ?", height, addr)
+func (m *Mysql) UpdateMonitor(height uint64, chainName string, addr string) error {
+	_, err := m.engine.Exec("update t_monitor set f_height = ? where f_addr = ? and f_chain = ?", height, addr, chainName)
 	return err
 }
 

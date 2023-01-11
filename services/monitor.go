@@ -119,7 +119,7 @@ func (c *MonitorService) HandleInsertCollect(txs []*types.TxErc20, chainName str
 				return err
 			}
 			if count > 0 {
-				if err := c.collect_db.UpdateMonitor(collectTask.BlockNum, targetAddr); err != nil { //更新monitor
+				if err := c.collect_db.UpdateMonitor(collectTask.BlockNum, chainName, targetAddr); err != nil { //更新monitor
 					logrus.Errorf("insert colelct transaction task error:%v tasks:[%v]", err, collectTask)
 					return err
 				}
