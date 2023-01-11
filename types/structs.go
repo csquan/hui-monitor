@@ -149,9 +149,9 @@ type HttpRes struct {
 type RegisterData struct {
 	UID   string `json:"uid"`
 	APPID string `json:"app_id"`
-	eth   string `json:"eth"`
-	btc   string `json:"btc"`
-	trx   string `json:"trx"`
+	Eth   string `json:"eth"`
+	Btc   string `json:"btc"`
+	Trx   string `json:"trx"`
 }
 
 type Data1 struct {

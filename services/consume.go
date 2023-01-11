@@ -1,9 +1,13 @@
 package services
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/ethereum/HuiCollect/config"
 	"github.com/ethereum/HuiCollect/types"
+	"github.com/ethereum/HuiCollect/utils"
+	"github.com/go-xorm/xorm"
+	"github.com/sirupsen/logrus"
 	"github.com/suiguo/hwlib/kafka"
 )
 
@@ -42,7 +46,60 @@ func (c *ConsumeService) Run() (err error) {
 	//c.ProduceKafka()
 	data := c.client.MessageChan()
 	out_msg := <-data
-	fmt.Println(string(out_msg.Value))
+	reg_data := string(out_msg.Value)
+	fmt.Println(reg_data)
+
+	reg := types.RegisterData{}
+
+	err = json.Unmarshal([]byte(reg_data), &reg)
+	if err != nil {
+		logrus.Info(err)
+	}
+
+	err = utils.CommitWithSession(c.collect_db, func(s *xorm.Session) error {
+		if reg.Eth != "" {
+			monitor := types.Monitor{}
+			monitor.Addr = reg.Eth
+			monitor.Height = 0
+
+			monitor.Chain = "hui"
+			if err := c.collect_db.InsertMonitor(s, &monitor); err != nil { //插入monitor
+				logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
+				return err
+			}
+
+			monitor.Chain = "eth"
+			if err := c.collect_db.InsertMonitor(s, &monitor); err != nil { //插入monitor
+				logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
+				return err
+			}
+
+			monitor.Chain = "bsc"
+			if err := c.collect_db.InsertMonitor(s, &monitor); err != nil { //插入monitor
+				logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
+				return err
+			}
+		} else if reg.Btc != "" {
+			monitor := types.Monitor{}
+			monitor.Addr = reg.Btc
+			monitor.Height = 0
+
+			if err := c.collect_db.InsertMonitor(s, &monitor); err != nil { //插入monitor
+				logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
+				return err
+			}
+		} else if reg.Trx != "" {
+			monitor := types.Monitor{}
+			monitor.Addr = reg.Trx
+			monitor.Height = 0
+
+			if err := c.collect_db.InsertMonitor(s, &monitor); err != nil { //插入monitor
+				logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
+				return err
+			}
+		}
+		return nil
+	})
 
 	return nil
 }
