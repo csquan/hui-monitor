@@ -50,12 +50,12 @@ func NewServiceScheduler(conf *config.Config, collect_db types.IDB, hui_block_db
 func (t *ServiceScheduler) Start() {
 	consumeService := NewConsumeService(t.collect_db, t.conf)
 
-	//monitorService := NewMonitorService(t.collect_db, t.hui_block_db, t.eth_block_db,
-	//	t.bsc_block_db, t.btc_block_db, t.tron_block_db, t.conf)
+	monitorService := NewMonitorService(t.collect_db, t.hui_block_db, t.eth_block_db,
+		t.bsc_block_db, t.btc_block_db, t.tron_block_db, t.conf)
 
 	t.services = []types.IAsyncService{
 		consumeService,
-		//monitorService,
+		monitorService,
 	}
 
 	timer := time.NewTimer(t.conf.QueryInterval)
