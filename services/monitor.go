@@ -49,18 +49,20 @@ func (c *MonitorService) Run() (err error) {
 		targetAddr := monitor.Addr
 
 		switch monitor.Chain {
-		case "eth":
+		case "hui":
 			hui_erc20_txs, err = c.hui_block_db.GetMonitorCollectTask(targetAddr, monitor.Height)
 			if err != nil {
 				logrus.Error(err)
 			}
-
-			bsc_erc20_txs, err = c.eth_block_db.GetMonitorCollectTask(targetAddr, monitor.Height)
+			break
+		case "eth":
+			eth_erc20_txs, err = c.eth_block_db.GetMonitorCollectTask(targetAddr, monitor.Height)
 			if err != nil {
 				logrus.Error(err)
 			}
-
-			eth_erc20_txs, err = c.bsc_block_db.GetMonitorCollectTask(targetAddr, monitor.Height)
+			break
+		case "bsc":
+			bsc_erc20_txs, err = c.bsc_block_db.GetMonitorCollectTask(targetAddr, monitor.Height)
 			if err != nil {
 				logrus.Error(err)
 			}
@@ -73,21 +75,24 @@ func (c *MonitorService) Run() (err error) {
 
 		}
 
-		if len(hui_erc20_txs) == 0 && len(bsc_erc20_txs) == 0 && len(eth_erc20_txs) == 0 {
-			logrus.Infof("no tx of target addr.")
-			continue
+		if len(hui_erc20_txs) > 0 {
+			err = c.HandleInsertCollect(hui_erc20_txs, "hui", targetAddr)
+			if err != nil {
+				logrus.Error(err)
+			}
 		}
-		err = c.HandleInsertCollect(hui_erc20_txs, "hui", targetAddr)
-		if err != nil {
-			logrus.Error(err)
+
+		if len(bsc_erc20_txs) > 0 {
+			err = c.HandleInsertCollect(bsc_erc20_txs, "bsc", targetAddr)
+			if err != nil {
+				logrus.Error(err)
+			}
 		}
-		err = c.HandleInsertCollect(bsc_erc20_txs, "bsc", targetAddr)
-		if err != nil {
-			logrus.Error(err)
-		}
-		err = c.HandleInsertCollect(eth_erc20_txs, "eth", targetAddr)
-		if err != nil {
-			logrus.Error(err)
+		if len(eth_erc20_txs) > 0 {
+			err = c.HandleInsertCollect(eth_erc20_txs, "eth", targetAddr)
+			if err != nil {
+				logrus.Error(err)
+			}
 		}
 	}
 
