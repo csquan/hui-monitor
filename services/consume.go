@@ -42,6 +42,15 @@ func NewConsumeService(collect_db types.IDB, c *config.Config) *ConsumeService {
 	}
 }
 
+func getMonitor(reg *types.RegisterData, chain string) (*types.Monitor, error) {
+	monitor := types.Monitor{}
+	monitor.Addr = reg.Eth
+	monitor.Chain = "hui"
+	monitor.Uid = reg.UID
+	monitor.AppId = reg.APPID
+	return &monitor, nil
+}
+
 func (c *ConsumeService) Run() (err error) {
 	//c.ProduceKafka()
 	data := c.client.MessageChan()
@@ -58,41 +67,50 @@ func (c *ConsumeService) Run() (err error) {
 
 	err = utils.CommitWithSession(c.collect_db, func(s *xorm.Session) error {
 		if reg.Eth != "" {
-			monitor := types.Monitor{}
-			monitor.Addr = reg.Eth
-			monitor.Chain = "hui"
+			monitor1, err := getMonitor(&reg, "hui")
+			if err != nil {
+				logrus.Error(err)
+			}
 
-			if err := c.collect_db.InsertMonitor(s, &monitor); err != nil { //插入monitor
-				logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
+			if err := c.collect_db.InsertMonitor(s, monitor1); err != nil { //插入monitor
+				logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor1)
 				return err
 			}
 
-			monitor.Chain = "eth"
-			if err := c.collect_db.InsertMonitor(s, &monitor); err != nil { //插入monitor
-				logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
+			monitor2, err := getMonitor(&reg, "eth")
+			if err != nil {
+				logrus.Error(err)
+			}
+			if err := c.collect_db.InsertMonitor(s, monitor2); err != nil { //插入monitor
+				logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor2)
 				return err
 			}
 
-			monitor.Chain = "bsc"
-			if err := c.collect_db.InsertMonitor(s, &monitor); err != nil { //插入monitor
-				logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
+			monitor3, err := getMonitor(&reg, "bsc")
+			if err != nil {
+				logrus.Error(err)
+			}
+			if err := c.collect_db.InsertMonitor(s, monitor3); err != nil { //插入monitor
+				logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor3)
 				return err
 			}
 		} else if reg.Btc != "" {
-			monitor := types.Monitor{}
-			monitor.Addr = reg.Btc
-			monitor.Chain = "btc"
+			monitor, err := getMonitor(&reg, "btc")
+			if err != nil {
+				logrus.Error(err)
+			}
 
-			if err := c.collect_db.InsertMonitor(s, &monitor); err != nil { //插入monitor
+			if err := c.collect_db.InsertMonitor(s, monitor); err != nil { //插入monitor
 				logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
 				return err
 			}
 		} else if reg.Trx != "" {
-			monitor := types.Monitor{}
-			monitor.Addr = reg.Trx
-			monitor.Chain = "trx"
+			monitor, err := getMonitor(&reg, "trx")
+			if err != nil {
+				logrus.Error(err)
+			}
 
-			if err := c.collect_db.InsertMonitor(s, &monitor); err != nil { //插入monitor
+			if err := c.collect_db.InsertMonitor(s, monitor); err != nil { //插入monitor
 				logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
 				return err
 			}

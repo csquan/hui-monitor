@@ -99,7 +99,8 @@ type Account struct {
 
 type Monitor struct {
 	*Base `xorm:"extends"`
-	Id    uint64 `xorm:"f_id"`
+	Uid   string `xorm:"f_uid"`
+	AppId string `xorm:"f_appid"`
 	Chain string `xorm:"f_chain"`
 	Addr  string `xorm:"f_addr"`
 }
