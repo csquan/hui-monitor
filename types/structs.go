@@ -11,6 +11,21 @@ type Base struct {
 	UpdatedAt time.Time `xorm:"updated f_updated_at"`
 }
 
+// 资产表
+type Asset struct {
+	Base
+	Chain                    string `xorm:"chain"`
+	Symbol                   string `xorm:"symbol"`
+	Address                  string `xorm:"address"`
+	Balance                  string `xorm:"balance"`
+	PendingCollectBalance    string `xorm:"pendingCollectBalance"`
+	PendingWithdrawalBalance string `xorm:"pendingWithdrawalBalance"`
+	Status                   int    `xorm:"status"`
+	OwnerType                int    `xorm:"ownerType"`
+	Extension                string `xorm:"extension"`
+	UsedFee                  string `xorm:"usedFee"`
+}
+
 type TransactionTask struct {
 	*Base        `xorm:"extends"`
 	ID           uint64    `xorm:"f_id not null pk autoincr bigint(20)" gorm:"primary_key"`
@@ -47,6 +62,7 @@ type CollectTxDB struct {
 	Addr           string `xorm:"f_addr"`
 	Sender         string `xorm:"f_sender"`
 	Receiver       string `xorm:"f_receiver"`
+	Balance        string `xorm:"f_balance"`
 	TokenCnt       string `xorm:"f_token_cnt"`
 	TokenCntOrigin string `xorm:"f_token_cnt_origin"`
 	LogIndex       int    `xorm:"f_log_index"`
@@ -71,21 +87,6 @@ type TxErc20 struct {
 	BlockTime      uint64 `xorm:"block_time"`
 }
 
-func (c *CollectTxDB) Copy(tx *TxErc20) {
-	c.Hash = tx.Hash
-	c.Addr = tx.Addr
-	c.Sender = tx.Sender
-	c.Receiver = tx.Receiver
-
-	c.TokenCnt = tx.TokenCnt
-	c.TokenCntOrigin = tx.TokenCntOrigin
-	c.LogIndex = tx.LogIndex
-	c.BlockState = tx.BlockState
-	c.BlockNum = tx.BlockNum
-
-	c.BlockTime = tx.BlockTime
-}
-
 type Account struct {
 	*Base        `xorm:"extends"`
 	Id           uint64    `xorm:"f_id"`
@@ -97,11 +98,10 @@ type Account struct {
 }
 
 type Monitor struct {
-	*Base  `xorm:"extends"`
-	Id     uint64 `xorm:"f_id"`
-	Chain  string `xorm:"f_chain"`
-	Addr   string `xorm:"f_addr"`
-	Height uint64 `xorm:"f_height"`
+	*Base `xorm:"extends"`
+	Id    uint64 `xorm:"f_id"`
+	Chain string `xorm:"f_chain"`
+	Addr  string `xorm:"f_addr"`
 }
 
 type Token struct {

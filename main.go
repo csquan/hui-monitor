@@ -66,34 +66,14 @@ func main() {
 		logrus.Fatalf("connect to dbConnection error:%v", err)
 	}
 
-	hui_block_dbConnection, err := db.NewHuiBlockMysql(&conf.MonitorHui)
-	if err != nil {
-		logrus.Fatalf("connect to dbConnection error:%v", err)
-	}
-
-	eth_block_dbConnection, err := db.NewEthBlockMysql(&conf.MonitorEth)
-	if err != nil {
-		logrus.Fatalf("connect to dbConnection error:%v", err)
-	}
-
-	bsc_block_dbConnection, err := db.NewBscBlockMysql(&conf.MonitorBsc)
-	if err != nil {
-		logrus.Fatalf("connect to dbConnection error:%v", err)
-	}
-
-	btc_block_dbConnection, err := db.NewBtcBlockMysql(&conf.MonitorBtc)
-	if err != nil {
-		logrus.Fatalf("connect to dbConnection error:%v", err)
-	}
-
-	tron_block_dbConnection, err := db.NewTronBlockMysql(&conf.MonitorTron)
+	wallet_dbConnection, err := db.NewWalletBlockMysql(&conf.WalletDataBase)
 	if err != nil {
 		logrus.Fatalf("connect to dbConnection error:%v", err)
 	}
 
 	//setup scheduler
 	scheduler, err := services.NewServiceScheduler(conf, collect_dbConnection,
-		hui_block_dbConnection, eth_block_dbConnection, bsc_block_dbConnection, btc_block_dbConnection, tron_block_dbConnection, sigCh)
+		wallet_dbConnection, sigCh)
 	if err != nil {
 		return
 	}

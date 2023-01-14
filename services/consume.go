@@ -60,9 +60,8 @@ func (c *ConsumeService) Run() (err error) {
 		if reg.Eth != "" {
 			monitor := types.Monitor{}
 			monitor.Addr = reg.Eth
-			monitor.Height = 0
-
 			monitor.Chain = "hui"
+
 			if err := c.collect_db.InsertMonitor(s, &monitor); err != nil { //插入monitor
 				logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
 				return err
@@ -82,7 +81,7 @@ func (c *ConsumeService) Run() (err error) {
 		} else if reg.Btc != "" {
 			monitor := types.Monitor{}
 			monitor.Addr = reg.Btc
-			monitor.Height = 0
+			monitor.Chain = "btc"
 
 			if err := c.collect_db.InsertMonitor(s, &monitor); err != nil { //插入monitor
 				logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
@@ -91,7 +90,7 @@ func (c *ConsumeService) Run() (err error) {
 		} else if reg.Trx != "" {
 			monitor := types.Monitor{}
 			monitor.Addr = reg.Trx
-			monitor.Height = 0
+			monitor.Chain = "trx"
 
 			if err := c.collect_db.InsertMonitor(s, &monitor); err != nil { //插入monitor
 				logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)

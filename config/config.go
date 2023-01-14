@@ -31,23 +31,7 @@ type UserInfoConf struct {
 	URL       string `mapstructure:"url"` //获取用户信息的URL
 }
 
-type MonitorHuiDataBaseConf struct {
-	DB string `mapstructure:"db"`
-}
-
-type MonitorEthDataBaseConf struct {
-	DB string `mapstructure:"db"`
-}
-
-type MonitorBscDataBaseConf struct {
-	DB string `mapstructure:"db"`
-}
-
-type MonitorBtcDataBaseConf struct {
-	DB string `mapstructure:"db"`
-}
-
-type MonitorTronDataBaseConf struct {
+type WalletDataBaseConf struct {
 	DB string `mapstructure:"db"`
 }
 
@@ -62,11 +46,7 @@ type Config struct {
 	CollectDataBase  CollectDataBaseConf `mapstructure:"collect_database"`
 	UserInfo         UserInfoConf        `mapstructure:"userInfo"`
 
-	MonitorHui  MonitorHuiDataBaseConf  `mapstructure:"monitor_hui_blocks_db"`
-	MonitorEth  MonitorEthDataBaseConf  `mapstructure:"monitor_eth_blocks_db"`
-	MonitorBsc  MonitorBscDataBaseConf  `mapstructure:"monitor_bsc_blocks_db"`
-	MonitorBtc  MonitorBtcDataBaseConf  `mapstructure:"monitor_btc_blocks_db"`
-	MonitorTron MonitorTronDataBaseConf `mapstructure:"monitor_tron_blocks_db"`
+	WalletDataBase WalletDataBaseConf `mapstructure:"wallet_database"`
 
 	LogConf    Log                   `mapstructure:"log"`
 	Chains     map[string]*ChainInfo `mapstructure:"chains"`

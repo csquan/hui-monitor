@@ -15,33 +15,20 @@ type ServiceScheduler struct {
 
 	collect_db types.IDB
 
-	hui_block_db types.IDB
-
-	eth_block_db types.IDB
-
-	bsc_block_db types.IDB
-
-	btc_block_db types.IDB
-
-	tron_block_db types.IDB
+	wallet_db types.IDB
 
 	services []types.IAsyncService
 
 	closeCh <-chan os.Signal
 }
 
-func NewServiceScheduler(conf *config.Config, collect_db types.IDB, hui_block_db types.IDB, eth_block_db types.IDB, bsc_block_db types.IDB,
-	btc_block_db types.IDB, tron_block_db types.IDB, closeCh <-chan os.Signal) (t *ServiceScheduler, err error) {
+func NewServiceScheduler(conf *config.Config, collect_db types.IDB, wallet_db types.IDB, closeCh <-chan os.Signal) (t *ServiceScheduler, err error) {
 	t = &ServiceScheduler{
-		conf:          conf,
-		closeCh:       closeCh,
-		collect_db:    collect_db,
-		hui_block_db:  hui_block_db,
-		eth_block_db:  eth_block_db,
-		bsc_block_db:  bsc_block_db,
-		btc_block_db:  btc_block_db,
-		tron_block_db: tron_block_db,
-		services:      make([]types.IAsyncService, 0),
+		conf:       conf,
+		closeCh:    closeCh,
+		collect_db: collect_db,
+		wallet_db:  wallet_db,
+		services:   make([]types.IAsyncService, 0),
 	}
 
 	return
@@ -50,8 +37,7 @@ func NewServiceScheduler(conf *config.Config, collect_db types.IDB, hui_block_db
 func (t *ServiceScheduler) Start() {
 	consumeService := NewConsumeService(t.collect_db, t.conf)
 
-	monitorService := NewMonitorService(t.collect_db, t.hui_block_db, t.eth_block_db,
-		t.bsc_block_db, t.btc_block_db, t.tron_block_db, t.conf)
+	monitorService := NewMonitorService(t.collect_db, t.wallet_db, t.conf)
 
 	t.services = []types.IAsyncService{
 		consumeService,
