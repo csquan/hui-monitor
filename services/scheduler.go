@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/HuiCollect/config"
-	"github.com/ethereum/HuiCollect/types"
+	"github.com/ethereum/hui-monitor/config"
+	"github.com/ethereum/hui-monitor/types"
 	"github.com/sirupsen/logrus"
 )
 

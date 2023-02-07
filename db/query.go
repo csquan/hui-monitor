@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/ethereum/HuiCollect/types"
+	"github.com/ethereum/hui-monitor/types"
 )
 
 func (m *Mysql) GetMonitorInfo() ([]*types.Monitor, error) {

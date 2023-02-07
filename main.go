@@ -11,10 +11,10 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 
-	"github.com/ethereum/HuiCollect/config"
-	"github.com/ethereum/HuiCollect/db"
-	"github.com/ethereum/HuiCollect/log"
-	"github.com/ethereum/HuiCollect/services"
+	"github.com/ethereum/hui-monitor/config"
+	"github.com/ethereum/hui-monitor/db"
+	"github.com/ethereum/hui-monitor/log"
+	"github.com/ethereum/hui-monitor/services"
 	"github.com/sirupsen/logrus"
 )
 

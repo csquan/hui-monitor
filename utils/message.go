@@ -3,7 +3,7 @@ package utils
 import (
 	"encoding/json"
 
-	"github.com/ethereum/HuiCollect/types"
+	"github.com/ethereum/hui-monitor/types"
 	"github.com/sirupsen/logrus"
 )
 

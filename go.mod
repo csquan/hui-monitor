@@ -1,4 +1,4 @@
-module github.com/ethereum/HuiCollect
+module github.com/ethereum/hui-monitor
 
 go 1.19
 

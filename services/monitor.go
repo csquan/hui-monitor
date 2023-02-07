@@ -2,9 +2,9 @@ package services
 
 import (
 	"fmt"
-	"github.com/ethereum/HuiCollect/config"
-	"github.com/ethereum/HuiCollect/types"
-	"github.com/ethereum/HuiCollect/utils"
+	"github.com/ethereum/hui-monitor/config"
+	"github.com/ethereum/hui-monitor/types"
+	"github.com/ethereum/hui-monitor/utils"
 	"github.com/go-xorm/xorm"
 	"github.com/sirupsen/logrus"
 )
