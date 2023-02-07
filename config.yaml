@@ -20,9 +20,9 @@ UserInfo:
   url: "https://fat.huiwang.io/registrar/"
 
 KafkaInfo:
-  url: kafka:9092
+  url: 192.168.31.242:9092
   groupId: monitor_group
-  topic: registrar-user-created
+  topic: registrar-user-created3
 
 log:
   stdout:

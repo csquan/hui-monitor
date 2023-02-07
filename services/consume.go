@@ -2,119 +2,126 @@ package services
 
 import (
 	"encoding/json"
-	"fmt"
+	"github.com/Shopify/sarama"
 	"github.com/ethereum/hui-monitor/config"
 	"github.com/ethereum/hui-monitor/types"
 	"github.com/ethereum/hui-monitor/utils"
 	"github.com/go-xorm/xorm"
 	"github.com/sirupsen/logrus"
-	"github.com/suiguo/hwlib/kafka"
+	kafka_sarama "github.com/suiguo/hwlib/kafka_sarama"
+	"github.com/suiguo/hwlib/logger"
 )
 
 type ConsumeService struct {
 	collect_db types.IDB
-	client     kafka.KafaClient
+	producer   kafka_sarama.Producer
+	client     kafka_sarama.Consumer
 	config     *config.Config
 }
 
 func (c *ConsumeService) ProduceKafka() {
-	err := c.client.Produce("registrar-user-created", &kafka.KafkaMsg{
-		Msg: []byte("hello word"),
-	})
+	reg := types.RegisterData{}
+	reg.APPID = "8888"
+	reg.Eth = "0x2b1cd262A97CDF0b76c19bF68F97C277492C37DF"
+	b, err := json.Marshal(&reg)
 	if err != nil {
-		fmt.Println(err)
+		logrus.Fatal(err)
+	}
+
+	err = c.producer.PushMsg(c.config.KafkaInfo.Topic, string(b))
+	if err != nil {
+		logrus.Fatal(err)
 	}
 }
 
 func NewConsumeService(collect_db types.IDB, c *config.Config) *ConsumeService {
-	cli, err := kafka.GetDefaultKafka(kafka.ALLType, c.KafkaInfo.Url, c.KafkaInfo.GroupId, kafka.Earliest, nil)
-	if err != nil {
-		fmt.Println(err)
+	kafka_consumer, err := kafka_sarama.NewSarConsumer([]string{c.KafkaInfo.Url}, c.KafkaInfo.GroupId, logger.NewStdLogger(), kafka_sarama.WithConsumerAutoCommit(true), kafka_sarama.WithConsumerOffsets(kafka_sarama.OffsetOldest))
+	if err != nil || kafka_consumer == nil {
+		logrus.Fatal(err)
 	}
-	err = cli.Subscribe(c.KafkaInfo.Topic)
-	if err != nil {
-		fmt.Println(err)
+	kafka_producer, err := kafka_sarama.NewSarProducer([]string{c.KafkaInfo.Url}, true, logger.NewStdLogger(), kafka_sarama.WithProductAcks(sarama.WaitForAll))
+	if err != nil || kafka_producer == nil {
+		logrus.Fatal(err)
 	}
 	return &ConsumeService{
 		collect_db: collect_db,
 		config:     c,
-		client:     cli,
+		client:     kafka_consumer,
+		producer:   kafka_producer,
 	}
 }
 
 func getMonitor(reg *types.RegisterData, chain string) (*types.Monitor, error) {
 	monitor := types.Monitor{}
 	monitor.Addr = reg.Eth
-	monitor.Chain = "hui"
+	monitor.Chain = chain
 	monitor.Uid = reg.UID
 	monitor.AppId = reg.APPID
 	return &monitor, nil
 }
 
 func (c *ConsumeService) Run() (err error) {
-	//c.ProduceKafka()
-	data := c.client.MessageChan()
-	out_msg := <-data
-	reg_data := string(out_msg.Value)
-	fmt.Println(reg_data)
+	c.client.SubscribeTopics([]string{c.config.KafkaInfo.Topic}, func(topic string, partition int32, offset int64, msg []byte) error {
+		logrus.Info(topic, partition, offset, string(msg))
+		reg := types.RegisterData{}
 
-	reg := types.RegisterData{}
-
-	err = json.Unmarshal([]byte(reg_data), &reg)
-	if err != nil {
-		logrus.Info(err)
-	}
-
-	err = utils.CommitWithSession(c.collect_db, func(s *xorm.Session) error {
-		if reg.Eth != "" {
-			monitor1, err := getMonitor(&reg, "hui")
-			if err != nil {
-				logrus.Error(err)
-			}
-
-			if err := c.collect_db.InsertMonitor(s, monitor1); err != nil { //插入monitor
-				logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor1)
-				return err
-			}
-
-			monitor2, err := getMonitor(&reg, "eth")
-			if err != nil {
-				logrus.Error(err)
-			}
-			if err := c.collect_db.InsertMonitor(s, monitor2); err != nil { //插入monitor
-				logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor2)
-				return err
-			}
-
-			monitor3, err := getMonitor(&reg, "bsc")
-			if err != nil {
-				logrus.Error(err)
-			}
-			if err := c.collect_db.InsertMonitor(s, monitor3); err != nil { //插入monitor
-				logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor3)
-				return err
-			}
-		} else if reg.Btc != "" {
-			monitor, err := getMonitor(&reg, "btc")
-			if err != nil {
-				logrus.Error(err)
-			}
-
-			if err := c.collect_db.InsertMonitor(s, monitor); err != nil { //插入monitor
-				logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
-				return err
-			}
-		} else if reg.Trx != "" {
-			monitor, err := getMonitor(&reg, "trx")
-			if err != nil {
-				logrus.Error(err)
-			}
-
-			if err := c.collect_db.InsertMonitor(s, monitor); err != nil { //插入monitor
-				logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
-				return err
-			}
+		err = json.Unmarshal(msg, &reg)
+		if err != nil {
+			logrus.Info(err)
 		}
+
+		err = utils.CommitWithSession(c.collect_db, func(s *xorm.Session) error {
+			if reg.Eth != "" {
+				monitor1, err := getMonitor(&reg, "hui")
+				if err != nil {
+					logrus.Error(err)
+				}
+
+				if err := c.collect_db.InsertMonitor(s, monitor1); err != nil { //插入monitor
+					logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor1)
+					return err
+				}
+
+				monitor2, err := getMonitor(&reg, "eth")
+				if err != nil {
+					logrus.Error(err)
+				}
+				if err := c.collect_db.InsertMonitor(s, monitor2); err != nil { //插入monitor
+					logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor2)
+					return err
+				}
+
+				monitor3, err := getMonitor(&reg, "bsc")
+				if err != nil {
+					logrus.Error(err)
+				}
+				if err := c.collect_db.InsertMonitor(s, monitor3); err != nil { //插入monitor
+					logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor3)
+					return err
+				}
+			} else if reg.Btc != "" {
+				monitor, err := getMonitor(&reg, "btc")
+				if err != nil {
+					logrus.Error(err)
+				}
+
+				if err := c.collect_db.InsertMonitor(s, monitor); err != nil { //插入monitor
+					logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
+					return err
+				}
+			} else if reg.Trx != "" {
+				monitor, err := getMonitor(&reg, "trx")
+				if err != nil {
+					logrus.Error(err)
+				}
+
+				if err := c.collect_db.InsertMonitor(s, monitor); err != nil { //插入monitor
+					logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
+					return err
+				}
+			}
+			return nil
+		})
 		return nil
 	})
 

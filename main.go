@@ -54,7 +54,7 @@ func main() {
 
 	leaseAlive()
 	defer removeFile()
-	logrus.Info("Hui-Collect started")
+	logrus.Info("hui-monitor started")
 
 	//listen kill signal
 	sigCh := make(chan os.Signal, 1)

@@ -37,11 +37,11 @@ func NewServiceScheduler(conf *config.Config, collect_db types.IDB, wallet_db ty
 func (t *ServiceScheduler) Start() {
 	consumeService := NewConsumeService(t.collect_db, t.conf)
 
-	monitorService := NewMonitorService(t.collect_db, t.wallet_db, t.conf)
+	//monitorService := NewMonitorService(t.collect_db, t.wallet_db, t.conf)
 
 	t.services = []types.IAsyncService{
 		consumeService,
-		monitorService,
+		//monitorService,
 	}
 
 	timer := time.NewTimer(t.conf.QueryInterval)
