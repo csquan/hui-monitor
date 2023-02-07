@@ -27,11 +27,11 @@ func (c *ConsumeService) ProduceKafka() {
 }
 
 func NewConsumeService(collect_db types.IDB, c *config.Config) *ConsumeService {
-	cli, err := kafka.GetDefaultKafka(kafka.ALLType, "kafka:9092", "monitor_group", kafka.Earliest, nil)
+	cli, err := kafka.GetDefaultKafka(kafka.ALLType, c.KafkaInfo.Url, c.KafkaInfo.GroupId, kafka.Earliest, nil)
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = cli.Subscribe("registrar-user-created")
+	err = cli.Subscribe(c.KafkaInfo.Topic)
 	if err != nil {
 		fmt.Println(err)
 	}

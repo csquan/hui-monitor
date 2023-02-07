@@ -31,6 +31,12 @@ type UserInfoConf struct {
 	URL       string `mapstructure:"url"` //获取用户信息的URL
 }
 
+type KafkaConf struct {
+	Url     string `mapstructure:"url"`
+	GroupId string `mapstructure:"groupId"`
+	Topic   string `mapstructure:"topic"`
+}
+
 type WalletDataBaseConf struct {
 	DB string `mapstructure:"db"`
 }
@@ -45,8 +51,8 @@ type Config struct {
 	QueryIntervalInt uint64              `mapstructure:"query_interval"`
 	CollectDataBase  CollectDataBaseConf `mapstructure:"collect_database"`
 	UserInfo         UserInfoConf        `mapstructure:"userInfo"`
-
-	WalletDataBase WalletDataBaseConf `mapstructure:"wallet_database"`
+	KafkaInfo        KafkaConf           `mapstructure:"kafkaInfo"`
+	WalletDataBase   WalletDataBaseConf  `mapstructure:"wallet_database"`
 
 	LogConf    Log                   `mapstructure:"log"`
 	Chains     map[string]*ChainInfo `mapstructure:"chains"`

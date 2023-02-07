@@ -19,6 +19,11 @@ UserInfo:
   KycPubKey: "026a38b8aa47f2af2d2163253ff5385cd059f90476990c7e3ee84bca0ead322241"
   url: "https://fat.huiwang.io/registrar/"
 
+KafkaInfo:
+  url: kafka:9092
+  groupId: monitor_group
+  topic: registrar-user-created
+
 log:
   stdout:
     enable: true
