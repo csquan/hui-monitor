@@ -16,6 +16,7 @@ type IWriter interface {
 
 	InsertMonitor(itf xorm.Interface, monitor *Monitor) (err error)
 	InsertCollectTx(itf xorm.Interface, task *Asset) (err error)
+	InsertMonitorTx(itf xorm.Interface, monitor *TxMonitor) (err error)
 }
 
 type IDB interface {

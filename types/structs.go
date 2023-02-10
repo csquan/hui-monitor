@@ -105,6 +105,14 @@ type Monitor struct {
 	Addr  string `xorm:"f_addr"`
 }
 
+type TxMonitor struct {
+	*Base `xorm:"extends"`
+	Hash  string `xorm:"f_hash"`
+	Chain string `xorm:"f_chain"`
+	Bck   string `xorm:"f_bck"`
+	Push  string `xorm:"f_push"`
+}
+
 type Token struct {
 	*Base       `xorm:"extends"`
 	Threshold   string `xorm:"f_currency"`
@@ -153,6 +161,14 @@ type RegisterData struct {
 	Eth   string `json:"eth"`
 	Btc   string `json:"btc"`
 	Trx   string `json:"trx"`
+}
+
+type TxData struct {
+	Chain          string `json:"chain"`
+	Hash           string `json:"hash"`
+	TxHeight       uint64 `json:"tx_height"`        //交易所在高度
+	CurChainHeight uint64 `json:"cur_chain_height"` //当前高度
+	Bck            string `json:"bck"`              //回调地址
 }
 
 type Data1 struct {

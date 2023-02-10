@@ -22,7 +22,8 @@ UserInfo:
 KafkaInfo:
   url: 192.168.31.242:9092
   groupId: monitor_group
-  topic: registrar-user-created3
+  topic_account: registrar-user-created3
+  topic_tx: MonitorTx0
 
 log:
   stdout:

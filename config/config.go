@@ -32,9 +32,10 @@ type UserInfoConf struct {
 }
 
 type KafkaConf struct {
-	Url     string `mapstructure:"url"`
-	GroupId string `mapstructure:"groupId"`
-	Topic   string `mapstructure:"topic"`
+	Url          string `mapstructure:"url"`
+	GroupId      string `mapstructure:"groupId"`
+	TopicAccount string `mapstructure:"topic_account"`
+	TopicTx      string `mapstructure:"topic_tx"`
 }
 
 type WalletDataBaseConf struct {
