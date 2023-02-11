@@ -256,3 +256,25 @@ type CallBackData struct {
 	RequestID string
 	Hash      string
 }
+
+type Coin struct {
+	MappedSymbol string `json:"mapped_symbol"`
+}
+
+type AssetInParam struct {
+	Symbol  string `json:"symbol"`
+	Chain   string `json:"chain"`
+	Address string `json:"address"`
+}
+
+type Balance struct {
+	chain                      string // 链, btc, eth
+	symbol                     string // 币种:btc, eth, usdt
+	address                    string
+	status                     uint32
+	owner_type                 uint32
+	balance                    string
+	pending_withdrawal_balance string
+	used_fee                   string
+	funded_fee                 string
+}

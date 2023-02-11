@@ -6,6 +6,9 @@ wallet_db:
   db : "root:csquan253905@tcp(127.0.0.1:3306)/wallet?charset=utf8mb4"
 
 
+walletInfo:
+  url:  http://15.152.203.71:8081
+
 server_conf:
   port: 8010
 

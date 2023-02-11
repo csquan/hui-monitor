@@ -38,8 +38,8 @@ type KafkaConf struct {
 	TopicTx      string `mapstructure:"topic_tx"`
 }
 
-type WalletDataBaseConf struct {
-	DB string `mapstructure:"db"`
+type WalletConf struct {
+	URL string `mapstructure:"url"` //钱包的URL
 }
 
 type ServerConf struct {
@@ -53,7 +53,7 @@ type Config struct {
 	CollectDataBase  CollectDataBaseConf `mapstructure:"collect_database"`
 	UserInfo         UserInfoConf        `mapstructure:"userInfo"`
 	KafkaInfo        KafkaConf           `mapstructure:"kafkaInfo"`
-	WalletDataBase   WalletDataBaseConf  `mapstructure:"wallet_database"`
+	WalletInfo       WalletConf          `mapstructure:"walletInfo"`
 
 	LogConf    Log                   `mapstructure:"log"`
 	Chains     map[string]*ChainInfo `mapstructure:"chains"`

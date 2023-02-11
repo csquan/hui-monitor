@@ -66,14 +66,8 @@ func main() {
 		logrus.Fatalf("connect to dbConnection error:%v", err)
 	}
 
-	wallet_dbConnection, err := db.NewWalletBlockMysql(&conf.WalletDataBase)
-	if err != nil {
-		logrus.Fatalf("connect to dbConnection error:%v", err)
-	}
-
 	//setup scheduler
-	scheduler, err := services.NewServiceScheduler(conf, collect_dbConnection,
-		wallet_dbConnection, sigCh)
+	scheduler, err := services.NewServiceScheduler(conf, collect_dbConnection, sigCh)
 	if err != nil {
 		return
 	}
