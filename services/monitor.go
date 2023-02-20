@@ -8,6 +8,7 @@ import (
 	"github.com/ethereum/hui-monitor/utils"
 	"github.com/go-xorm/xorm"
 	"github.com/sirupsen/logrus"
+	"github.com/tidwall/gjson"
 	"strings"
 )
 
@@ -24,7 +25,20 @@ func NewMonitorService(collect_db types.IDB, c *config.Config) *MonitorService {
 		config:     c,
 	}
 }
+func (c *MonitorService) getCollectSrcTx(asset types.Asset, uid string) types.CollectSrcTx {
+	srcTx := types.CollectSrcTx{
+		Chain:        asset.Chain,
+		Symbol:       asset.Symbol,
+		Address:      asset.Address,
+		Uid:          uid,
+		Balance:      asset.Balance,
+		Status:       asset.Status,
+		OwnerType:    asset.OwnerType,
+		CollectState: 0,
+	}
+	return srcTx
 
+}
 func (c *MonitorService) Run() (err error) {
 	monitors, err := c.collect_db.GetMonitorInfo()
 
@@ -32,11 +46,11 @@ func (c *MonitorService) Run() (err error) {
 		return err
 	}
 
+	//获取所有支持的mappedToken名称
 	tokensArr, err := c.GetTokenInfo()
 	if err != nil {
 		logrus.Error(err)
 	}
-	logrus.Info(tokensArr)
 	for _, monitor := range monitors {
 		for _, tokens := range tokensArr {
 			var infos []map[string]interface{}
@@ -46,15 +60,30 @@ func (c *MonitorService) Run() (err error) {
 				continue
 			}
 			for _, token := range infos {
-				balance, err := c.GetUserBalance(token["chain"].(string), monitor.Addr, token["symbol"].(string))
+				//得到账户的资产
+				AssetsStr, err := c.GetUserAssets(token["chain"].(string), monitor.Addr, token["symbol"].(string))
 				if err != nil {
 					logrus.Error(err)
 				}
-				logrus.Info(balance)
+				errorstr := gjson.Get(AssetsStr, "error")
+				if errorstr.String() != "" {
+					continue
+				}
 				assets := types.Asset{}
-				err = c.HandleInsertCollect(&assets)
+				err = json.Unmarshal([]byte(AssetsStr), &assets)
 				if err != nil {
 					logrus.Error(err)
+					continue
+				}
+				// 资产状态不是冻结且PendingWithdrawalBalanc为0
+				if assets.Status != 0 && assets.PendingWithdrawalBalance == "0" {
+					srcTx := c.getCollectSrcTx(assets, monitor.Uid)
+
+					//插入归集源交易
+					err = c.HandleInsertCollect(&srcTx)
+					if err != nil {
+						logrus.Error(err)
+					}
 				}
 			}
 		}
@@ -63,7 +92,7 @@ func (c *MonitorService) Run() (err error) {
 	return
 }
 
-func (c *MonitorService) GetUserBalance(chain string, addr string, symbol string) (string, error) {
+func (c *MonitorService) GetUserAssets(chain string, addr string, symbol string) (string, error) {
 	param := types.AssetInParam{
 		Symbol:  symbol,
 		Chain:   chain,
@@ -113,9 +142,11 @@ func (c *MonitorService) GetTokenInfo() ([]*string, error) {
 	}
 	return assetStrs, nil
 }
-func (c *MonitorService) HandleInsertCollect(tx *types.Asset) error {
+
+// 插入归集源交易表
+func (c *MonitorService) HandleInsertCollect(tx *types.CollectSrcTx) error {
 	err := utils.CommitWithSession(c.collect_db, func(s *xorm.Session) error {
-		if err := c.collect_db.InsertCollectTx(s, tx); err != nil { //插入归集交易表
+		if err := c.collect_db.InsertCollectTx(s, tx); err != nil {
 			logrus.Errorf("insert colelct transaction task error:%v tasks:[%v]", err, tx)
 			return err
 		}

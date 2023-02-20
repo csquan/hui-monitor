@@ -80,7 +80,7 @@ func (m *Mysql) UpdateMonitor(height uint64, chainName string, addr string) erro
 	return err
 }
 
-func (m *Mysql) InsertCollectTx(itf xorm.Interface, task *types.Asset) (err error) {
+func (m *Mysql) InsertCollectTx(itf xorm.Interface, task *types.CollectSrcTx) (err error) {
 	_, err = itf.Insert(task)
 	if err != nil {
 		logrus.Errorf("insert collect task error:%v, tasks:%v", err, task)

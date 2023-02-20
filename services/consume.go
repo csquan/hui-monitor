@@ -72,7 +72,7 @@ func getTxMonitor(tx *types.TxData) (*types.TxMonitor, error) {
 	TxMonitor := types.TxMonitor{}
 	TxMonitor.Chain = tx.Chain
 	TxMonitor.Hash = tx.Hash
-	TxMonitor.Bck = tx.Bck
+	TxMonitor.OrderID = tx.OrderId
 	return &TxMonitor, nil
 }
 
