@@ -109,7 +109,6 @@ func (c *MonitorService) GetUserAssets(chain string, addr string, symbol string)
 		logrus.Error(err1)
 		//return nil, err1
 	}
-	fmt.Println(res)
 	return res, nil
 }
 
