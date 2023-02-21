@@ -55,8 +55,8 @@ func (c *UpdateService) Run() (err error) {
 			return err
 		}
 		status := gjson.Get(str, "status")
-		logrus.Info(status.String())
-		if status.Int() == 100 { //40 怎么处理
+
+		if status.Int() == 21 || status.Int() == 30 || status.Int() == 50 || status.Int() == 60 || status.Int() == 100 { //都认为成功，更新状态
 			tx.Status = int(types.TxCollectedState)
 			c.HandleUpdateCollect(tx)
 		}
