@@ -10,7 +10,6 @@ import (
 	"github.com/sirupsen/logrus"
 	kafka_sarama "github.com/suiguo/hwlib/kafka_sarama"
 	"github.com/suiguo/hwlib/logger"
-	"strings"
 )
 
 type ConsumeService struct {
@@ -61,7 +60,7 @@ func NewConsumeService(collect_db types.IDB, c *config.Config) *ConsumeService {
 
 func getMonitor(reg *types.RegisterData, chain string) (*types.Monitor, error) {
 	monitor := types.Monitor{}
-	monitor.Addr = strings.ToLower(reg.Eth)
+	monitor.Addr = reg.Eth
 	monitor.Chain = chain
 	monitor.Uid = reg.UID
 	monitor.AppId = reg.APPID

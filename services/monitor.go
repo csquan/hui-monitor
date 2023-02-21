@@ -60,13 +60,15 @@ func (c *MonitorService) Run() (err error) {
 				continue
 			}
 			for _, token := range infos {
+				//src_tx 中是否有相同地址的交易
+
 				//得到账户的资产
 				AssetsStr, err := c.GetUserAssets(token["chain"].(string), monitor.Addr, token["symbol"].(string))
 				if err != nil {
 					logrus.Error(err)
 				}
 				errorstr := gjson.Get(AssetsStr, "error")
-				if errorstr.String() != "" {
+				if errorstr.String() != "" { //钱包这里返回应该规范下
 					continue
 				}
 				assets := types.Asset{}
@@ -76,7 +78,7 @@ func (c *MonitorService) Run() (err error) {
 					continue
 				}
 				// 资产状态不是冻结且PendingWithdrawalBalanc为0
-				if assets.Status != 0 && assets.PendingWithdrawalBalance == "0" {
+				if assets.Status == 0 && assets.PendingWithdrawalBalance == "" {
 					srcTx := c.getCollectSrcTx(assets, monitor.Uid)
 
 					//插入归集源交易

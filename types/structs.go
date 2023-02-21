@@ -95,15 +95,19 @@ type TxData struct {
 }
 
 type CollectSrcTx struct {
-	*Base        `	xorm:"extends"`
+	*Base        `xorm:"extends"`
 	Chain        string `xorm:"f_chain"`
-	Symbol       string `xorm:"f_symnbol"`
+	Symbol       string `xorm:"f_symbol"`
 	Address      string `xorm:"f_address"`
 	Uid          string `xorm:"f_uid"`
 	Balance      string `xorm:"f_balance"`
-	Status       int    `xorm:"f_push"`
-	OwnerType    int    `xorm:"f_push"`
+	Status       int    `xorm:"f_status"`
+	OwnerType    int    `xorm:"f_ownerType"`
 	CollectState int    `xorm:"f_collect_state"`
+}
+
+func (t *CollectSrcTx) TableName() string {
+	return "t_src_tx"
 }
 
 type Coin struct {

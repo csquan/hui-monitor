@@ -7,7 +7,7 @@ wallet_db:
 
 
 walletInfo:
-  url:  http://15.152.203.71:8081
+  url:  http://54.254.77.93:31218/v1
 
 server_conf:
   port: 8010
