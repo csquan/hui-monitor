@@ -24,7 +24,7 @@ func (m *Mysql) GetSrcTx(chain string, addr string, symbol string) (bool, error)
 
 func (m *Mysql) GetUncollectedSrcTx() ([]*types.CollectSrcTx, error) {
 	txs := make([]*types.CollectSrcTx, 0)
-	err := m.engine.Table("t_src_tx").Where("f_collect_state !=2").Find(&txs)
+	err := m.engine.Table("t_src_tx").Where("f_collect_state !=?", int(types.TxCollectedState)).Find(&txs)
 	if err != nil {
 		return nil, err
 	}

@@ -7,20 +7,3 @@ const (
 	TxCollectingState
 	TxCollectedState
 )
-
-const (
-	TxInitState TransactionState = iota
-	TxAssmblyState
-	TxSignState
-	TxBroadcastState
-	TxCheckState
-	TxEndState
-)
-
-var TransactionStateName = map[TransactionState]string{
-	TxInitState:      "Init",
-	TxAssmblyState:   "Assmbly",
-	TxSignState:      "Sign",
-	TxBroadcastState: "broadcast",
-	TxCheckState:     "check",
-}
