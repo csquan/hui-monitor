@@ -17,7 +17,6 @@ type Mysql struct {
 }
 
 func NewCollectMysql(conf *config.CollectDataBaseConf) (m *Mysql, err error) {
-	//"test:123@/test?charset=utf8"
 	engine, err := xorm.NewEngine("mysql", conf.DB)
 	if err != nil {
 		logrus.Errorf("create engine error: %v", err)
@@ -46,19 +45,6 @@ func (m *Mysql) GetSession() *xorm.Session {
 	return m.engine.NewSession()
 }
 
-func (m *Mysql) SaveMonitorTask(itf xorm.Interface, monitor *types.Monitor) (err error) {
-	_, err = itf.Insert(monitor)
-	if err != nil {
-		logrus.Errorf("insert monitor task error:%v, tasks:%v", err, monitor)
-	}
-	return
-}
-
-func (m *Mysql) RemoveMonitorTask(addr string) error {
-	_, err := m.engine.Exec("delete t_monitor where f_addr = ?", addr)
-	return err
-}
-
 func (m *Mysql) InsertMonitor(itf xorm.Interface, monitor *types.Monitor) (err error) {
 	_, err = itf.Insert(monitor)
 	if err != nil {
@@ -73,11 +59,6 @@ func (m *Mysql) InsertMonitorTx(itf xorm.Interface, monitorTx *types.TxMonitor) 
 		logrus.Errorf("insert monitor Tx task error:%v, monitorTx:%v", err, monitorTx)
 	}
 	return
-}
-
-func (m *Mysql) UpdateMonitor(height uint64, chainName string, addr string) error {
-	_, err := m.engine.Exec("update t_monitor set f_height = ? where f_addr = ? and f_chain = ?", height, addr, chainName)
-	return err
 }
 
 func (m *Mysql) InsertCollectTx(itf xorm.Interface, task *types.CollectSrcTx) (err error) {

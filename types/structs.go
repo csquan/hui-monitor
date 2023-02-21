@@ -24,23 +24,6 @@ type Asset struct {
 	FundedFee                string
 }
 
-type CollectTxDB struct {
-	*Base          `xorm:"extends"`
-	Hash           string `xorm:"f_tx_hash"`
-	Addr           string `xorm:"f_addr"`
-	Sender         string `xorm:"f_sender"`
-	Receiver       string `xorm:"f_receiver"`
-	Balance        string `xorm:"f_balance"`
-	TokenCnt       string `xorm:"f_token_cnt"`
-	TokenCntOrigin string `xorm:"f_token_cnt_origin"`
-	LogIndex       int    `xorm:"f_log_index"`
-	BlockState     uint8  `xorm:"f_block_state"`
-	BlockNum       uint64 `xorm:"f_block_num"`
-	BlockTime      uint64 `xorm:"f_block_time"`
-	CollectState   int    `xorm:"f_collect_state"`
-	Chain          string `xorm:"f_chain"`
-}
-
 type Monitor struct {
 	*Base `xorm:"extends"`
 	Uid   string `xorm:"f_uid"`
@@ -64,18 +47,6 @@ func (t *TxMonitor) TableName() string {
 
 func (t *Monitor) TableName() string {
 	return "t_monitor"
-}
-
-func (t *CollectTxDB) TableName() string {
-	return "t_src_tx"
-}
-
-type HttpRes struct {
-	RequestId string `json:"requestId"`
-	Hash      string `json:"hash"`
-	Code      int    `json:"code"`
-	Message   string `json:"message"`
-	Status    int    `json:"status"`
 }
 
 type RegisterData struct {

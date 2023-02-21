@@ -54,8 +54,8 @@ func (c *UpdateService) Run() (err error) {
 			logrus.Error(err)
 			return err
 		}
-		state := gjson.Get(str, "status")
-		logrus.Info(state.String())
+		status := gjson.Get(str, "status")
+		logrus.Info(status.String())
 	}
 
 	return nil
