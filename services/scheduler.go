@@ -36,9 +36,12 @@ func (t *ServiceScheduler) Start() {
 
 	monitorService := NewMonitorService(t.collect_db, t.conf)
 
+	UpdateService := NewUpdateService(t.collect_db, t.conf)
+
 	t.services = []types.IAsyncService{
 		consumeService,
 		monitorService,
+		UpdateService,
 	}
 
 	timer := time.NewTimer(t.conf.QueryInterval)

@@ -14,7 +14,6 @@ import (
 
 type MonitorService struct {
 	collect_db types.IDB
-	wallet_db  types.IDB
 
 	config *config.Config
 }
@@ -60,8 +59,14 @@ func (c *MonitorService) Run() (err error) {
 				continue
 			}
 			for _, token := range infos {
-				//src_tx 中是否有相同地址的交易
+				//src_tx 中是否有相同地址的交易，且归集状态为未完成
+				exist, err := c.GetSrcTx(token["chain"].(string), monitor.Addr, token["symbol"].(string))
+				if err != nil {
 
+				}
+				if exist == true { //相同地址的交易存在且归集状态为未完成，则这里就不处理
+					continue
+				}
 				//得到账户的资产
 				AssetsStr, err := c.GetUserAssets(token["chain"].(string), monitor.Addr, token["symbol"].(string))
 				if err != nil {
@@ -112,6 +117,11 @@ func (c *MonitorService) GetUserAssets(chain string, addr string, symbol string)
 		//return nil, err1
 	}
 	return res, nil
+}
+
+func (c *MonitorService) GetSrcTx(chain string, addr string, symbol string) (bool, error) {
+	exist, err := c.collect_db.GetSrcTx(chain, addr, symbol)
+	return exist, err
 }
 
 func (c *MonitorService) GetTokenInfo() ([]*string, error) {

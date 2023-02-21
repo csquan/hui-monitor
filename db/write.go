@@ -87,3 +87,11 @@ func (m *Mysql) InsertCollectTx(itf xorm.Interface, task *types.CollectSrcTx) (e
 	}
 	return
 }
+
+func (m *Mysql) UpdateCollectTx(itf xorm.Interface, task *types.CollectSrcTx) (err error) {
+	_, err = itf.Update(task)
+	if err != nil {
+		logrus.Errorf("update collect task error:%v, tasks:%v", err, task)
+	}
+	return
+}

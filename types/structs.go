@@ -104,6 +104,7 @@ type CollectSrcTx struct {
 	Status       int    `xorm:"f_status"`
 	OwnerType    int    `xorm:"f_ownerType"`
 	CollectState int    `xorm:"f_collect_state"`
+	OrderId      string `xorm:"f_order_id"`
 }
 
 func (t *CollectSrcTx) TableName() string {
@@ -118,4 +119,9 @@ type AssetInParam struct {
 	Symbol  string `json:"symbol"`
 	Chain   string `json:"chain"`
 	Address string `json:"address"`
+}
+
+type WithdrawParam struct {
+	AppId   string `json:"app_id"`
+	OrderId string `json:"order_id"`
 }
