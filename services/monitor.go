@@ -132,6 +132,9 @@ func (c *MonitorService) GetTokenInfo() ([]*string, error) {
 		logrus.Error(err)
 		return nil, err
 	}
+	if res == "[]" {
+		return nil, nil
+	}
 	coinArray := strings.Split(res[1:len(res)-1], ",")
 
 	url = c.config.WalletInfo.URL + "/" + "getMappedToken"
