@@ -51,7 +51,9 @@ func (c *MonitorService) Run() (err error) {
 		logrus.Error(err)
 	}
 	for _, monitor := range monitors {
+		logrus.Info(monitor)
 		for _, tokens := range tokensArr {
+			logrus.Info(tokens)
 			var infos []map[string]interface{}
 			err = json.Unmarshal([]byte(*tokens), &infos)
 			if err != nil {
@@ -135,8 +137,9 @@ func (c *MonitorService) GetTokenInfo() ([]*string, error) {
 	if res == "[]" {
 		return nil, nil
 	}
+	logrus.Info(res)
 	coinArray := strings.Split(res[1:len(res)-1], ",")
-
+	logrus.Info(coinArray)
 	url = c.config.WalletInfo.URL + "/" + "getMappedToken"
 	for _, coin := range coinArray {
 		param := types.Coin{
