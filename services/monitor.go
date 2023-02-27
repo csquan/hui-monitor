@@ -78,6 +78,10 @@ func (c *MonitorService) Run() (err error) {
 				if errorstr.String() != "" { //钱包这里返回应该规范下
 					continue
 				}
+				balance := gjson.Get(AssetsStr, "balance")
+				if balance.String() == "0" {
+					continue
+				}
 				assets := types.Asset{}
 				err = json.Unmarshal([]byte(AssetsStr), &assets)
 				if err != nil {
