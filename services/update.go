@@ -2,11 +2,9 @@ package services
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/ethereum/hui-monitor/config"
 	"github.com/ethereum/hui-monitor/types"
 	"github.com/ethereum/hui-monitor/utils"
-	"github.com/go-xorm/xorm"
 	"github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
 )
@@ -26,6 +24,7 @@ func NewUpdateService(collect_db types.IDB, c *config.Config) *UpdateService {
 
 func (c *UpdateService) GetCollectState(orderId string) (string, error) {
 	param := types.WithdrawParam{
+		AppId:   "",
 		OrderId: orderId,
 	}
 	msg, err1 := json.Marshal(param)
@@ -55,9 +54,10 @@ func (c *UpdateService) Run() (err error) {
 			return err
 		}
 		status := gjson.Get(str, "status")
-
+		logrus.Info("查询归集状态：tx.OrderId:" + tx.OrderId + "status:" + status.String())
 		if status.Int() == 21 || status.Int() == 30 || status.Int() == 50 || status.Int() == 60 || status.Int() == 100 { //都认为成功，更新状态
-			tx.Status = int(types.TxCollectedState)
+			logrus.Info("更新该笔状态为完成")
+			tx.CollectState = int(types.TxCollectedState)
 			c.HandleUpdateCollect(tx)
 		}
 	}
@@ -67,17 +67,10 @@ func (c *UpdateService) Run() (err error) {
 
 // 更新归集源交易表状态
 func (c *UpdateService) HandleUpdateCollect(tx *types.CollectSrcTx) error {
-	err := utils.CommitWithSession(c.collect_db, func(s *xorm.Session) error {
-		if err := c.collect_db.UpdateCollectTx(s, tx); err != nil {
-			logrus.Errorf("insert colelct transaction task error:%v tasks:[%v]", err, tx)
-			return err
-		}
-		return nil
-	})
-	if err != nil {
-		return fmt.Errorf("insert colelct transactidon task error:%v", err)
+	if err := c.collect_db.UpdateCollectTx(tx.CollectState, tx.ID); err != nil {
+		logrus.Errorf("update colelct transaction task error:%v tasks:[%v]", err, tx)
+		return err
 	}
-
 	return nil
 }
 

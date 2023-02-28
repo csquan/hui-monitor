@@ -64,11 +64,13 @@ func (c *MonitorService) Run() (err error) {
 				//src_tx 中是否有相同地址的交易，且归集状态为未完成
 				exist, err := c.GetSrcTx(token["chain"].(string), monitor.Addr, token["symbol"].(string))
 				if err != nil {
-
+					logrus.Error(err)
 				}
 				if exist == true { //相同地址的交易存在且归集状态为未完成，则这里就不处理
+					logrus.Info("相同地址的交易存在且归集未完成")
 					continue
 				}
+				logrus.Info("相同地址的交易但是归集已经完成，addr:" + monitor.Addr)
 				//得到账户的资产
 				AssetsStr, err := c.GetUserAssets(token["chain"].(string), monitor.Addr, token["symbol"].(string))
 				if err != nil {

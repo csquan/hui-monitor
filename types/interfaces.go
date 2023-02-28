@@ -27,7 +27,7 @@ type IWriter interface {
 	InsertMonitorTx(itf xorm.Interface, monitor *TxMonitor) (err error)
 
 	//更新归集交易状态
-	UpdateCollectTx(itf xorm.Interface, task *CollectSrcTx) (err error)
+	UpdateCollectTx(state int, id uint64) (err error)
 }
 
 type IDB interface {

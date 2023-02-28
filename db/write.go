@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/ethereum/hui-monitor/config"
@@ -69,10 +70,11 @@ func (m *Mysql) InsertCollectTx(itf xorm.Interface, task *types.CollectSrcTx) (e
 	return
 }
 
-func (m *Mysql) UpdateCollectTx(itf xorm.Interface, task *types.CollectSrcTx) (err error) {
-	_, err = itf.Update(task)
+func (m *Mysql) UpdateCollectTx(state int, id uint64) (err error) {
+	sql := fmt.Sprintf("update t_src_tx set f_collect_state = %d  where f_id = %d", state, id)
+	_, err = m.engine.Exec(sql)
 	if err != nil {
-		logrus.Errorf("update collect task error:%v, tasks:%v", err, task)
+		logrus.Errorf("update collect task error:%v, id:%v,", err, id)
 	}
 	return
 }
