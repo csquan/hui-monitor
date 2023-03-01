@@ -157,7 +157,8 @@ func (c *ConsumeService) Run() (err error) {
 		}
 
 		err = utils.CommitWithSession(c.collect_db, func(s *xorm.Session) error {
-			TxMonitor.Push = "0"
+			TxMonitor.GetReceiptTimes = 0
+			TxMonitor.ReceiptState = -1
 			if err := c.collect_db.InsertMonitorTx(s, TxMonitor); err != nil { //插入monitor
 				logrus.Errorf("insert tx monitor task error:%v tasks:[%v]", err, TxData)
 				return err
