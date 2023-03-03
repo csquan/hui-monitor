@@ -7,11 +7,13 @@ walletInfo:
 server_conf:
   port: 8010
 
+query_interval:
+    30000
 chains:
   Hui:
     id: 8888
     rpc_url: "http://43.198.66.226:8545"
-    fetch_timeout: 3000
+    fetch_timeout: 6000
 
 UserInfo:
   KycPubKey: "026a38b8aa47f2af2d2163253ff5385cd059f90476990c7e3ee84bca0ead322241"
