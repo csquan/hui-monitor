@@ -8,16 +8,16 @@ import (
 	"github.com/ethereum/hui-monitor/utils"
 	"github.com/go-xorm/xorm"
 	"github.com/sirupsen/logrus"
-	kafka_sarama "github.com/suiguo/hwlib/kafka_sarama"
+	kafkasarama "github.com/suiguo/hwlib/kafka_sarama"
 	"github.com/suiguo/hwlib/logger"
 )
 
 type ConsumeService struct {
-	collect_db     types.IDB
-	producer       kafka_sarama.Producer
-	client_account kafka_sarama.Consumer
-	client_tx      kafka_sarama.Consumer
-	config         *config.Config
+	collectDb     types.IDB
+	producer      kafkasarama.Producer
+	clientAccount kafkasarama.Consumer
+	clientTx      kafkasarama.Consumer
+	config        *config.Config
 }
 
 func (c *ConsumeService) ProduceKafka() {
@@ -29,32 +29,64 @@ func (c *ConsumeService) ProduceKafka() {
 		logrus.Fatal(err)
 	}
 
-	err = c.producer.PushMsg(c.config.KafkaInfo.TopicAccount, string(b))
+	err = c.producer.PushMsg(c.config.KafkaInfo.TopicAccount, b)
 	if err != nil {
 		logrus.Fatal(err)
 	}
 }
 
-func NewConsumeService(collect_db types.IDB, c *config.Config) *ConsumeService {
-	kafka_consumer_account, err := kafka_sarama.NewSarConsumer([]string{c.KafkaInfo.Url}, c.KafkaInfo.GroupId, logger.NewStdLogger(), kafka_sarama.WithConsumerAutoCommit(true), kafka_sarama.WithConsumerOffsets(kafka_sarama.OffsetOldest))
-	if err != nil || kafka_consumer_account == nil {
+func NewConsumeService(collectDb types.IDB, c *config.Config) *ConsumeService {
+	reConf := func(old []kafkasarama.Config) []kafkasarama.Config {
+		if c.KafkaInfo.Pass != "" {
+			old = append(old, kafkasarama.WithSASLAuth(c.KafkaInfo.User, c.KafkaInfo.Pass, kafkasarama.SHA_256))
+		}
+		if c.KafkaInfo.Tls {
+			old = append(old, kafkasarama.WithTls("", "", "", false))
+		}
+		return old
+	}
+	consumerConf := make([]kafkasarama.Config, 0)
+	consumerConf = append(consumerConf,
+		kafkasarama.WithConsumerAutoCommit(true),
+		kafkasarama.WithConsumerOffsets(kafkasarama.OffsetOldest),
+	)
+	consumerConf = reConf(consumerConf)
+	kafkaConsumerAccount, err := kafkasarama.NewSarConsumer(
+		c.KafkaInfo.Url,
+		c.KafkaInfo.GroupId,
+		logger.NewStdLogger(),
+		consumerConf...,
+	)
+	if err != nil || kafkaConsumerAccount == nil {
 		logrus.Fatal(err)
 	}
-	kafka_consumer_tx, err := kafka_sarama.NewSarConsumer([]string{c.KafkaInfo.Url}, c.KafkaInfo.GroupId, logger.NewStdLogger(), kafka_sarama.WithConsumerAutoCommit(true), kafka_sarama.WithConsumerOffsets(kafka_sarama.OffsetOldest))
-	if err != nil || kafka_consumer_tx == nil {
+	kafkaConsumerTx, err := kafkasarama.NewSarConsumer(
+		c.KafkaInfo.Url,
+		c.KafkaInfo.GroupId,
+		logger.NewStdLogger(),
+		consumerConf...,
+	)
+	if err != nil || kafkaConsumerTx == nil {
 		logrus.Fatal(err)
 	}
 
-	kafka_producer, err := kafka_sarama.NewSarProducer([]string{c.KafkaInfo.Url}, true, logger.NewStdLogger(), kafka_sarama.WithProductAcks(sarama.WaitForAll))
-	if err != nil || kafka_producer == nil {
+	prodConf := []kafkasarama.Config{kafkasarama.WithProductAcks(sarama.WaitForAll)}
+	prodConf = reConf(prodConf)
+	kafkaProducer, err := kafkasarama.NewSarProducer(
+		c.KafkaInfo.Url,
+		true,
+		logger.NewStdLogger(),
+		prodConf...,
+	)
+	if err != nil || kafkaProducer == nil {
 		logrus.Fatal(err)
 	}
 	return &ConsumeService{
-		collect_db:     collect_db,
-		config:         c,
-		client_account: kafka_consumer_account,
-		client_tx:      kafka_consumer_tx,
-		producer:       kafka_producer,
+		collectDb:     collectDb,
+		config:        c,
+		clientAccount: kafkaConsumerAccount,
+		clientTx:      kafkaConsumerTx,
+		producer:      kafkaProducer,
 	}
 }
 
@@ -76,7 +108,7 @@ func getTxMonitor(tx *types.TxData) (*types.TxMonitor, error) {
 }
 
 func (c *ConsumeService) Run() (err error) {
-	c.client_account.SubscribeTopics([]string{c.config.KafkaInfo.TopicAccount}, func(topic string, partition int32, offset int64, msg []byte) error {
+	c.clientAccount.SubscribeTopics([]string{c.config.KafkaInfo.TopicAccount}, func(topic string, partition int32, offset int64, msg []byte) error {
 		logrus.Info(topic, partition, offset, string(msg))
 		reg := types.RegisterData{}
 
@@ -85,14 +117,14 @@ func (c *ConsumeService) Run() (err error) {
 			logrus.Info(err)
 		}
 
-		err = utils.CommitWithSession(c.collect_db, func(s *xorm.Session) error {
+		err = utils.CommitWithSession(c.collectDb, func(s *xorm.Session) error {
 			if reg.Eth != "" {
 				monitor1, err := getMonitor(&reg, "hui")
 				if err != nil {
 					logrus.Error(err)
 				}
 
-				if err := c.collect_db.InsertMonitor(s, monitor1); err != nil { //插入monitor
+				if err := c.collectDb.InsertMonitor(s, monitor1); err != nil { //插入monitor
 					logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor1)
 					return err
 				}
@@ -101,7 +133,7 @@ func (c *ConsumeService) Run() (err error) {
 				if err != nil {
 					logrus.Error(err)
 				}
-				if err := c.collect_db.InsertMonitor(s, monitor2); err != nil { //插入monitor
+				if err := c.collectDb.InsertMonitor(s, monitor2); err != nil { //插入monitor
 					logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor2)
 					return err
 				}
@@ -110,7 +142,7 @@ func (c *ConsumeService) Run() (err error) {
 				if err != nil {
 					logrus.Error(err)
 				}
-				if err := c.collect_db.InsertMonitor(s, monitor3); err != nil { //插入monitor
+				if err := c.collectDb.InsertMonitor(s, monitor3); err != nil { //插入monitor
 					logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor3)
 					return err
 				}
@@ -120,7 +152,7 @@ func (c *ConsumeService) Run() (err error) {
 					logrus.Error(err)
 				}
 
-				if err := c.collect_db.InsertMonitor(s, monitor); err != nil { //插入monitor
+				if err := c.collectDb.InsertMonitor(s, monitor); err != nil { //插入monitor
 					logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
 					return err
 				}
@@ -130,7 +162,7 @@ func (c *ConsumeService) Run() (err error) {
 					logrus.Error(err)
 				}
 
-				if err := c.collect_db.InsertMonitor(s, monitor); err != nil { //插入monitor
+				if err := c.collectDb.InsertMonitor(s, monitor); err != nil { //插入monitor
 					logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
 					return err
 				}
@@ -140,7 +172,7 @@ func (c *ConsumeService) Run() (err error) {
 		return nil
 	})
 
-	c.client_tx.SubscribeTopics([]string{c.config.KafkaInfo.TopicTx}, func(topic string, partition int32, offset int64, msg []byte) error {
+	c.clientTx.SubscribeTopics([]string{c.config.KafkaInfo.TopicTx}, func(topic string, partition int32, offset int64, msg []byte) error {
 		logrus.Info(topic, partition, offset, string(msg))
 		TxData := types.TxData{}
 
@@ -156,10 +188,10 @@ func (c *ConsumeService) Run() (err error) {
 			logrus.Error(err)
 		}
 
-		err = utils.CommitWithSession(c.collect_db, func(s *xorm.Session) error {
+		err = utils.CommitWithSession(c.collectDb, func(s *xorm.Session) error {
 			TxMonitor.GetReceiptTimes = 0
 			TxMonitor.ReceiptState = -1
-			if err := c.collect_db.InsertMonitorTx(s, TxMonitor); err != nil { //插入monitor
+			if err := c.collectDb.InsertMonitorTx(s, TxMonitor); err != nil { //插入monitor
 				logrus.Errorf("insert tx monitor task error:%v tasks:[%v]", err, TxData)
 				return err
 			}

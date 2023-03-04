@@ -15,12 +15,12 @@ chains:
     rpc_url: "http://43.198.66.226:8545"
     fetch_timeout: 6000
 
-UserInfo:
-  KycPubKey: "026a38b8aa47f2af2d2163253ff5385cd059f90476990c7e3ee84bca0ead322241"
-  url: "https://fat.huiwang.io/registrar/"
-
 KafkaInfo:
-  url: 192.168.31.242:9092
+  url:
+    - 192.168.31.242:9092
+  user: ""
+  pass: ""
+  tls: false
   groupId: monitor_group
   topic_account: registrar-user-created3
   topic_tx: MonitorTx0

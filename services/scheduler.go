@@ -13,30 +13,30 @@ import (
 type ServiceScheduler struct {
 	conf *config.Config
 
-	collect_db types.IDB
+	collectDb types.IDB
 
 	services []types.IAsyncService
 
 	closeCh <-chan os.Signal
 }
 
-func NewServiceScheduler(conf *config.Config, collect_db types.IDB, closeCh <-chan os.Signal) (t *ServiceScheduler, err error) {
+func NewServiceScheduler(conf *config.Config, collectDb types.IDB, closeCh <-chan os.Signal) (t *ServiceScheduler, err error) {
 	t = &ServiceScheduler{
-		conf:       conf,
-		closeCh:    closeCh,
-		collect_db: collect_db,
-		services:   make([]types.IAsyncService, 0),
+		conf:      conf,
+		closeCh:   closeCh,
+		collectDb: collectDb,
+		services:  make([]types.IAsyncService, 0),
 	}
 
 	return
 }
 
 func (t *ServiceScheduler) Start() {
-	consumeService := NewConsumeService(t.collect_db, t.conf)
+	consumeService := NewConsumeService(t.collectDb, t.conf)
 
-	monitorService := NewMonitorService(t.collect_db, t.conf)
+	monitorService := NewMonitorService(t.collectDb, t.conf)
 
-	UpdateService := NewUpdateService(t.collect_db, t.conf)
+	UpdateService := NewUpdateService(t.collectDb, t.conf)
 
 	t.services = []types.IAsyncService{
 		consumeService,

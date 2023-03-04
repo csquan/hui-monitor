@@ -13,15 +13,15 @@ import (
 )
 
 type MonitorService struct {
-	collect_db types.IDB
+	collectDb types.IDB
 
 	config *config.Config
 }
 
-func NewMonitorService(collect_db types.IDB, c *config.Config) *MonitorService {
+func NewMonitorService(collectDb types.IDB, c *config.Config) *MonitorService {
 	return &MonitorService{
-		collect_db: collect_db,
-		config:     c,
+		collectDb: collectDb,
+		config:    c,
 	}
 }
 func (c *MonitorService) getCollectSrcTx(asset types.Asset, uid string) types.CollectSrcTx {
@@ -39,7 +39,7 @@ func (c *MonitorService) getCollectSrcTx(asset types.Asset, uid string) types.Co
 
 }
 func (c *MonitorService) Run() (err error) {
-	monitors, err := c.collect_db.GetMonitorInfo()
+	monitors, err := c.collectDb.GetMonitorInfo()
 
 	if err != nil {
 		return err
@@ -128,7 +128,7 @@ func (c *MonitorService) GetUserAssets(chain string, addr string, symbol string)
 }
 
 func (c *MonitorService) GetSrcTx(chain string, addr string, symbol string) (bool, error) {
-	exist, err := c.collect_db.GetSrcTx(chain, addr, symbol)
+	exist, err := c.collectDb.GetSrcTx(chain, addr, symbol)
 	return exist, err
 }
 
@@ -168,8 +168,8 @@ func (c *MonitorService) GetTokenInfo() ([]*string, error) {
 
 // 插入归集源交易表
 func (c *MonitorService) HandleInsertCollect(tx *types.CollectSrcTx) error {
-	err := utils.CommitWithSession(c.collect_db, func(s *xorm.Session) error {
-		if err := c.collect_db.InsertCollectTx(s, tx); err != nil {
+	err := utils.CommitWithSession(c.collectDb, func(s *xorm.Session) error {
+		if err := c.collectDb.InsertCollectTx(s, tx); err != nil {
 			logrus.Errorf("insert colelct transaction task error:%v tasks:[%v]", err, tx)
 			return err
 		}
