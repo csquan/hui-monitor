@@ -33,7 +33,7 @@ data:
       pass: "j9Vh@h*axhngwQoh"
       tls: true
       groupId: monitor_group
-      topic_account: registrar-user-created3
+      topic_account: registrar-user-created
       topic_tx: MonitorTx0
 
     log:
