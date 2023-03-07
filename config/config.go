@@ -23,7 +23,8 @@ type Conf struct {
 }
 
 type CollectDataBaseConf struct {
-	DB string `mapstructure:"db"` //DB 连接信息
+	HuiDB  string `mapstructure:"hui_db"`  //DB 连接信息
+	TronDB string `mapstructure:"tron_db"` //DB 连接信息
 }
 
 type UserInfoConf struct {

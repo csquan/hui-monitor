@@ -13,37 +13,53 @@ import (
 )
 
 type Mysql struct {
-	conf   *config.CollectDataBaseConf
-	engine *xorm.Engine
+	conf       *config.CollectDataBaseConf
+	huiEngine  *xorm.Engine
+	tronEngine *xorm.Engine
 }
 
 func NewCollectMysql(conf *config.CollectDataBaseConf) (m *Mysql, err error) {
-	engine, err := xorm.NewEngine("mysql", conf.DB)
+	huiEngine, err := xorm.NewEngine("mysql", conf.HuiDB)
 	if err != nil {
 		logrus.Errorf("create engine error: %v", err)
 		return
 	}
-	engine.ShowSQL(false)
-	engine.Logger().SetLevel(core.LOG_DEBUG)
+	huiEngine.ShowSQL(false)
+	huiEngine.Logger().SetLevel(core.LOG_DEBUG)
 	location, err := time.LoadLocation("UTC")
 	if err != nil {
 		return nil, err
 	}
-	engine.SetTZLocation(location)
-	engine.SetTZDatabase(location)
+	huiEngine.SetTZLocation(location)
+	huiEngine.SetTZDatabase(location)
+
+	tronEngine, err := xorm.NewEngine("mysql", conf.TronDB)
+	if err != nil {
+		logrus.Errorf("create engine error: %v", err)
+		return
+	}
+	tronEngine.ShowSQL(false)
+	tronEngine.Logger().SetLevel(core.LOG_DEBUG)
+	if err != nil {
+		return nil, err
+	}
+	tronEngine.SetTZLocation(location)
+	tronEngine.SetTZDatabase(location)
+
 	m = &Mysql{
-		conf:   conf,
-		engine: engine,
+		conf:       conf,
+		huiEngine:  huiEngine,
+		tronEngine: tronEngine,
 	}
 	return
 }
 
 func (m *Mysql) GetEngine() *xorm.Engine {
-	return m.engine
+	return m.huiEngine
 }
 
 func (m *Mysql) GetSession() *xorm.Session {
-	return m.engine.NewSession()
+	return m.huiEngine.NewSession()
 }
 
 func (m *Mysql) InsertMonitor(itf xorm.Interface, monitor *types.Monitor) (err error) {
@@ -72,7 +88,7 @@ func (m *Mysql) InsertCollectTx(itf xorm.Interface, task *types.CollectSrcTx) (e
 
 func (m *Mysql) UpdateCollectTx(state int, id uint64) (err error) {
 	sql := fmt.Sprintf("update t_src_tx set f_collect_state = %d  where f_id = %d", state, id)
-	_, err = m.engine.Exec(sql)
+	_, err = m.huiEngine.Exec(sql)
 	if err != nil {
 		logrus.Errorf("update collect task error:%v, id:%v,", err, id)
 	}
