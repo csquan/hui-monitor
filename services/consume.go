@@ -129,43 +129,43 @@ func (c *ConsumeService) Run() (err error) {
 					return err
 				}
 
-				monitor2, err := getMonitor(&reg, "eth")
-				if err != nil {
-					logrus.Error(err)
-				}
-				if err := c.collectDb.InsertMonitor(s, monitor2); err != nil { //插入monitor
-					logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor2)
-					return err
-				}
+				//monitor2, err := getMonitor(&reg, "eth")
+				//if err != nil {
+				//	logrus.Error(err)
+				//}
+				//if err := c.collectDb.InsertMonitor(s, monitor2); err != nil { //插入monitor
+				//	logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor2)
+				//	return err
+				//}
 
-				monitor3, err := getMonitor(&reg, "bsc")
-				if err != nil {
-					logrus.Error(err)
-				}
-				if err := c.collectDb.InsertMonitor(s, monitor3); err != nil { //插入monitor
-					logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor3)
-					return err
-				}
+				//monitor3, err := getMonitor(&reg, "bsc")
+				//if err != nil {
+				//	logrus.Error(err)
+				//}
+				//if err := c.collectDb.InsertMonitor(s, monitor3); err != nil { //插入monitor
+				//	logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor3)
+				//	return err
+				//}
 			} else if reg.Btc != "" {
-				monitor, err := getMonitor(&reg, "btc")
-				if err != nil {
-					logrus.Error(err)
-				}
-
-				if err := c.collectDb.InsertMonitor(s, monitor); err != nil { //插入monitor
-					logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
-					return err
-				}
+				//monitor, err := getMonitor(&reg, "btc")
+				//if err != nil {
+				//	logrus.Error(err)
+				//}
+				//
+				//if err := c.collectDb.InsertMonitor(s, monitor); err != nil { //插入monitor
+				//	logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
+				//	return err
+				//}
 			} else if reg.Trx != "" {
-				monitor, err := getMonitor(&reg, "trx")
-				if err != nil {
-					logrus.Error(err)
-				}
+				//monitor, err := getMonitor(&reg, "trx")
+				//if err != nil {
+				//	logrus.Error(err)
+				//}
 
-				if err := c.collectDb.InsertMonitor(s, monitor); err != nil { //插入monitor
-					logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
-					return err
-				}
+				//if err := c.collectDb.InsertMonitor(s, monitor); err != nil { //插入monitor
+				//	logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
+				//	return err
+				//}
 			}
 			return nil
 		})
