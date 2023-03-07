@@ -92,7 +92,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: hui-monitor
-          image: reg.huiwang.io/fat/hui-monitor:3.0.2
+          image: reg.huiwang.io/fat/hui-monitor:3.0.3
 
           command:
             - sh
