@@ -23,7 +23,7 @@ KafkaInfo:
   pass: ""
   tls: false
   groupId: monitor_group
-  topic_account: registrar-user-created3
+  topic_account: registrar-user-created
   topic_tx: MonitorTx0
 
 log:

@@ -128,7 +128,6 @@ func (c *ConsumeService) Run() (err error) {
 					logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor1)
 					return err
 				}
-
 				//monitor2, err := getMonitor(&reg, "eth")
 				//if err != nil {
 				//	logrus.Error(err)
@@ -146,7 +145,8 @@ func (c *ConsumeService) Run() (err error) {
 				//	logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor3)
 				//	return err
 				//}
-			} else if reg.Btc != "" {
+			}
+			if reg.Btc != "" {
 				//monitor, err := getMonitor(&reg, "btc")
 				//if err != nil {
 				//	logrus.Error(err)
@@ -156,16 +156,17 @@ func (c *ConsumeService) Run() (err error) {
 				//	logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
 				//	return err
 				//}
-			} else if reg.Trx != "" {
-				//monitor, err := getMonitor(&reg, "trx")
-				//if err != nil {
-				//	logrus.Error(err)
-				//}
+			}
+			if reg.Trx != "" {
+				monitor, err := getMonitor(&reg, "trx")
+				if err != nil {
+					logrus.Error(err)
+				}
 
-				//if err := c.collectDb.InsertMonitor(s, monitor); err != nil { //插入monitor
-				//	logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
-				//	return err
-				//}
+				if err := c.collectDb.InsertMonitor(s, monitor); err != nil { //插入monitor
+					logrus.Errorf("insert monitor task error:%v tasks:[%v]", err, monitor)
+					return err
+				}
 			}
 			return nil
 		})
