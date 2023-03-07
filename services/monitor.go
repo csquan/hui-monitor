@@ -71,14 +71,14 @@ func (c *MonitorService) Run() (err error) {
 					logrus.Info("相同地址的交易存在且归集未完成")
 					continue
 				}
-				logrus.Info("相同地址的交易但是归集已经完成，可以继续进行，addr:" + monitor.Addr)
+				logrus.Info("相同地址的交易但是归集已经完成，可以继续进行，addr:" + monitor.Addr + "token: " + token["symbol"].(string))
 				//得到账户的资产
 				AssetsStr, err := c.GetUserAssets(token["chain"].(string), monitor.Addr, token["symbol"].(string))
 				if err != nil {
 					logrus.Info("GetUserAssets 错误返回:")
 					logrus.Error(err)
 				}
-				logrus.Info("资产返回，Asset:" + monitor.Addr)
+				logrus.Info("资产返回，Asset:" + AssetsStr)
 				errorstr := gjson.Get(AssetsStr, "error")
 				if errorstr.String() != "" { //钱包这里返回应该规范下
 					logrus.Info("gjson错误返回:")
