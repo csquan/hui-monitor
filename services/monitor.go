@@ -61,44 +61,57 @@ func (c *MonitorService) Run() (err error) {
 				continue
 			}
 			for _, token := range infos {
+				logrus.Info("当前token: " + token["symbol"].(string))
 				//src_tx 中是否有相同地址的交易，且归集状态为未完成
 				exist, err := c.GetSrcTx(token["chain"].(string), monitor.Addr, token["symbol"].(string))
 				if err != nil {
+					logrus.Info("GetSrcTx出错")
 					logrus.Error(err)
 				}
 				if exist == true { //相同地址的交易存在且归集状态为未完成，则这里就不处理
-					logrus.Info("相同地址的交易存在且归集未完成")
+					logrus.Info("相同地址的交易存在且归集未完成" + monitor.Addr + "token: " + token["symbol"].(string))
 					continue
 				}
-				logrus.Info("相同地址的交易但是归集已经完成，addr:" + monitor.Addr)
+				logrus.Info("相同地址的交易但是归集已经完成，可以继续进行，addr:" + monitor.Addr + "token: " + token["symbol"].(string))
 				//得到账户的资产
 				AssetsStr, err := c.GetUserAssets(token["chain"].(string), monitor.Addr, token["symbol"].(string))
 				if err != nil {
+					logrus.Info("GetUserAssets 错误返回:")
 					logrus.Error(err)
 				}
+				logrus.Info("资产返回，Asset:" + AssetsStr)
 				errorstr := gjson.Get(AssetsStr, "error")
 				if errorstr.String() != "" { //钱包这里返回应该规范下
+					logrus.Info("gjson错误返回:")
 					continue
 				}
 				balance := gjson.Get(AssetsStr, "balance")
+				logrus.Info("余额:" + balance.String())
 				if balance.String() == "0" {
+					logrus.Info("balacne为0返回:")
 					continue
 				}
 				assets := types.Asset{}
 				err = json.Unmarshal([]byte(AssetsStr), &assets)
 				if err != nil {
+					logrus.Info("Unmarshal错误返回:")
 					logrus.Error(err)
 					continue
 				}
+				logrus.Info(assets.Status)
+				logrus.Info("PendingWithdrawalBalance" + assets.PendingWithdrawalBalance)
 				// 资产状态不是冻结且PendingWithdrawalBalanc为0
 				if assets.Status == 0 && assets.PendingWithdrawalBalance == "" {
+					logrus.Info("资产状态不冻结且PendingWithdrawalBalanc不为0:")
 					srcTx := c.getCollectSrcTx(assets, monitor.Uid)
 
-					//插入归集源交易
+					//插入归集源交易--如果这里有 相同链 相同symbol 相同地址 余额的交易就不插入？
 					err = c.HandleInsertCollect(&srcTx)
 					if err != nil {
 						logrus.Error(err)
 					}
+				} else {
+					logrus.Info("资产状态是冻结或者PendingWithdrawalBalanc为0:")
 				}
 			}
 		}
