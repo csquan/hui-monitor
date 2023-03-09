@@ -1,6 +1,5 @@
 collect_database:
-  hui_db : "root:csquan253905@tcp(127.0.0.1:3306)/HuiCollect?charset=utf8mb4"
-  tron_db : "root:csquan253905@tcp(127.0.0.1:3306)/TronCollect?charset=utf8mb4"
+  db : "root:csquan253905@tcp(127.0.0.1:3306)/HuiCollect?charset=utf8mb4"
 
 walletInfo:
   url:  http://54.254.77.93:31218/v1

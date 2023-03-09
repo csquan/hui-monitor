@@ -92,7 +92,14 @@ func NewConsumeService(collectDb types.IDB, c *config.Config) *ConsumeService {
 
 func getMonitor(reg *types.RegisterData, chain string) (*types.Monitor, error) {
 	monitor := types.Monitor{}
-	monitor.Addr = reg.Eth
+	switch chain {
+	case "hui":
+		monitor.Addr = reg.Eth
+	case "trx":
+		monitor.Addr = reg.Trx
+	default:
+		logrus.Info("not support now!")
+	}
 	monitor.Chain = chain
 	monitor.Uid = reg.UID
 	monitor.AppId = reg.APPID
@@ -109,6 +116,7 @@ func getTxMonitor(tx *types.TxData) (*types.TxMonitor, error) {
 
 func (c *ConsumeService) Run() (err error) {
 	c.clientAccount.SubscribeTopics([]string{c.config.KafkaInfo.TopicAccount}, func(topic string, partition int32, offset int64, msg []byte) error {
+		logrus.Info("消费到创建账户topic")
 		logrus.Info(topic, partition, offset, string(msg))
 		reg := types.RegisterData{}
 
@@ -158,6 +166,7 @@ func (c *ConsumeService) Run() (err error) {
 				//}
 			}
 			if reg.Trx != "" {
+				logrus.Info("监测到TRX地址")
 				monitor, err := getMonitor(&reg, "trx")
 				if err != nil {
 					logrus.Error(err)
