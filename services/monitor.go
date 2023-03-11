@@ -59,26 +59,23 @@ func (c *MonitorService) Run() (err error) {
 
 	hot_msg := gjson.Get(hot_str, "message")
 
-	logrus.Info(hot_msg.String())
-
-	hotAddrs, err := c.GetHotWallet(hot_msg.String())
+	_, err = c.GetHotWallet(hot_msg.String())
 	if err != nil {
 		logrus.Error(err)
 		return
 	}
-	//这里删除热钱包和黑名单相同地址的交易
-	for _, hotAddr := range hotAddrs {
-		if len(hotAddr) > 1 {
-			hotAddr = hotAddr[1 : len(hotAddr)-1]
-			for _, monitor := range monitors {
-				if hotAddr == monitor.Addr {
-					logrus.Info("开始删除地址：监控地址 :" + monitor.Addr + "匹配到的热钱包地址: " + hotAddr)
-					c.collectDb.DelCollectTask(monitor.Addr, monitor.Chain)
-					return //todo:
-				}
-			}
-		}
-	}
+	//for _, hotAddr := range hotAddrs {
+	//	if len(hotAddr) > 1 {
+	//		hotAddr = hotAddr[1 : len(hotAddr)-1]
+	//		for _, monitor := range monitors {
+	//			if hotAddr == monitor.Addr {
+	//				logrus.Info("开始删除地址：监控地址 :" + monitor.Addr + "匹配到的热钱包地址: " + hotAddr)
+	//				c.collectDb.DelCollectTask(monitor.Addr, monitor.Chain)
+	//				return //todo:
+	//			}
+	//		}
+	//	}
+	//}
 
 	//获取所有支持的mappedToken名称
 	tokensArr, err := c.GetTokenInfo()
