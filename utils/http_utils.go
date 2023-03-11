@@ -53,6 +53,26 @@ func DoRequestWithHeaders(url string, method string, reqData []byte, headers map
 	logrus.Infof("DoRequestWithHeaders host:%s path:%s, input:%s, response:%v", req.Host, req.URL.Path, string(reqData), string(data))
 	return
 }
+func GetHotWallets(url string) (string, error) {
+	url = url + "/" + "hotwallets"
+	res, err := http.Get(url)
+	if err != nil {
+		logrus.Error(err)
+		return "", err
+	} else {
+		getRes, gerErr := ioutil.ReadAll(res.Body)
+		if gerErr != nil {
+			fmt.Println(gerErr)
+		} else {
+			logrus.Info(string(getRes))
+			return string(getRes), nil
+		}
+	}
+	if res.Status != "200" {
+
+	}
+	return "", nil
+}
 
 func Post(requestUrl string, bytesData []byte) (ret string, err error) {
 	res, err := http.Post(requestUrl,

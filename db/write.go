@@ -79,3 +79,8 @@ func (m *Mysql) UpdateCollectTx(state int, id uint64) (err error) {
 	}
 	return
 }
+
+func (m *Mysql) DelCollectTask(address string, chain string) error {
+	_, err := m.engine.Exec("delete from t_monitor where f_addr = ? and  f_chain = ? ", address, chain)
+	return err
+}

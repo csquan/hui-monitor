@@ -28,6 +28,8 @@ type IWriter interface {
 
 	//更新归集交易状态
 	UpdateCollectTx(state int, id uint64) (err error)
+	//删除地址
+	DelCollectTask(address string, chain string) error
 }
 
 type IDB interface {

@@ -14,8 +14,7 @@ import (
 
 type MonitorService struct {
 	collectDb types.IDB
-
-	config *config.Config
+	config    *config.Config
 }
 
 func NewMonitorService(collectDb types.IDB, c *config.Config) *MonitorService {
@@ -38,11 +37,47 @@ func (c *MonitorService) getCollectSrcTx(asset types.Asset, uid string) types.Co
 	return srcTx
 
 }
+func (c *MonitorService) GetHotWallet(str string) ([]string, error) {
+	str = str[1 : len(str)-1]
+	arr := strings.Split(str, ",")
+	return arr, nil
+}
+
 func (c *MonitorService) Run() (err error) {
 	monitors, err := c.collectDb.GetMonitorInfo()
 
 	if err != nil {
 		return err
+	}
+
+	//这里首先排除热钱包地址
+	hot_str, err := utils.GetHotWallets(c.config.WalletInfo.URL)
+	if err != nil {
+		logrus.Error(err)
+		return
+	}
+
+	hot_msg := gjson.Get(hot_str, "message")
+
+	logrus.Info(hot_msg.String())
+
+	hotAddrs, err := c.GetHotWallet(hot_msg.String())
+	if err != nil {
+		logrus.Error(err)
+		return
+	}
+	//这里删除热钱包和黑名单相同地址的交易
+	for _, hotAddr := range hotAddrs {
+		if len(hotAddr) > 1 {
+			hotAddr = hotAddr[1 : len(hotAddr)-1]
+			for _, monitor := range monitors {
+				if hotAddr == monitor.Addr {
+					logrus.Info("开始删除地址：监控地址 :" + monitor.Addr + "匹配到的热钱包地址: " + hotAddr)
+					c.collectDb.DelCollectTask(monitor.Addr, monitor.Chain)
+					return //todo:
+				}
+			}
+		}
 	}
 
 	//获取所有支持的mappedToken名称
